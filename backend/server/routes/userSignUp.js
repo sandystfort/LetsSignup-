@@ -1,43 +1,47 @@
 const express = require("express");
 const router = express.Router();
-const z = require('zod')
 const bcrypt = require("bcrypt");
-const { newUserValidation } = require('../models/userValidator')
-const newUserModel = require('../models/userModel')
+const { newUserValidation } = require("../models/userValidator");
+const newUserModel = require("../models/userModel");
 
-router.post('/signup', async (req, res) => {
-    const { error } = newUserValidation(req.body);
-    console.log(error)
-    if (error) return res.status(400).send({ message: error.errors[0].message });
+router.post("/signup", async (req, res) => {
+  console.log("Received signup request:", req.body); // Log the received data
+  const { error } = newUserValidation(req.body);
 
-    const { username, email, password } = req.body
+  if (error) {
+    console.error("Validation error:", error);
+    return res.status(400).send({ message: error.errors[0].message });
+  }
 
-    //check if email already exists
-    const user = await newUserModel.findOne({ username: username })
-    if (user)
-        return res.status(409).send({ message: "Username is taken, pick another" })
+  const { firstName, lastName, username, email, password } = req.body;
 
-    //generates the hash
-    const generateHash = await bcrypt.genSalt(Number(10))
-
-    //parse the generated hash into the password
-    const hashPassword = await bcrypt.hash(password, generateHash)
-
-    //creates a new user
-    const createUser = new newUserModel({
-        username: username,
-        email: email,
-        password: hashPassword,
-    });
-
-   
-    try {
-        const saveNewUser = await createUser.save();
-        res.send(saveNewUser);
-    } catch (error) {
-        res.status(400).send({ message: "Error trying to create new user" });
+  try {
+    // Check if email already exists
+    const existingUser = await newUserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).send({ message: "Email is already registered" });
     }
 
-})
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create a new user instance
+    const newUser = new newUserModel({
+      firstName,
+      lastName,
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the user in the database
+    const savedUser = await newUser.save();
+    res.status(201).send(savedUser);
+  } catch (err) {
+    console.error("Error during signup:", err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
 
 module.exports = router;

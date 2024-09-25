@@ -1,42 +1,55 @@
 const express = require("express");
 const router = express.Router();
-const z = require('zod')
-const { userLoginValidation } = require('../models/userValidator')
-const newUserModel = require('../models/userModel')
-const bcrypt = require('bcrypt')
-const { generateAccessToken } = require('../utilities/generateToken')
+const bcrypt = require("bcrypt");
+const { userLoginValidation } = require("../models/userValidator");
+const newUserModel = require("../models/userModel");
+const { generateAccessToken } = require("../utilities/generateToken");
 
+// Login route
+router.post("/login", async (req, res) => {
+  console.log("Received login request:", req.body); // Log the request data
 
-router.post('/login', async (req, res) => {
-
+  // Validate login data
   const { error } = userLoginValidation(req.body);
-  if (error) return res.status(400).send({ message: error.errors[0].message });
+  if (error) {
+    console.error("Validation error:", error.details[0].message);
+    return res.status(400).send({ message: "Invalid input data." });
+  }
 
-  const { username, password } = req.body
+  const { email, password } = req.body;
 
-  const user = await newUserModel.findOne({ username: username });
+  try {
+    // Find user by email
+    const user = await newUserModel.findOne({ email });
+    console.log("Found user:", user ? user.email : "No user found"); // Log the user data
 
-  //checks if the user exists
-  if (!user)
-    return res
-      .status(401)
-      .send({ message: "email or password does not exists, try again" });
+    // Check if the user exists
+    if (!user) {
+      console.error("User not found for email:", email);
+      return res.status(401).send({ message: "Invalid email or password." });
+    }
 
-  //check if the password is correct or not
-  const checkPasswordValidity = await bcrypt.compare(
-    password,
-    user.password
-  );
+    // Check if the password is correct
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      console.error("Invalid password attempt for user:", email);
+      return res.status(401).send({ message: "Invalid email or password." });
+    }
 
-  if (!checkPasswordValidity)
-    return res
-      .status(401)
-      .send({ message: "email or password does not exists, try again" });
+    // Generate JSON Web Token if authenticated
+    const accessToken = generateAccessToken(
+      user._id,
+      user.email,
+      user.username
+    );
+    console.log("Generated access token for user:", user.email);
 
-  //create json web token if authenticated and send it back to client in header where it is stored in localStorage ( might not be best practice )
-  const accessToken = generateAccessToken(user._id, user.email, user.username, user.password)
-
-  res.header('Authorization', accessToken).send({ accessToken: accessToken })
-})
+    // Send back the access token
+    res.header("Authorization", accessToken).send({ accessToken });
+  } catch (err) {
+    console.error("Server error during login:", err.message); // Log the error message
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
 
 module.exports = router;
