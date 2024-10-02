@@ -32,6 +32,10 @@ const newUserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false, // Default is regular user, not admin
+    },
   },
   { collection: "users" }
 );

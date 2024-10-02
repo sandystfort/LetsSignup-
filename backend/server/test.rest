@@ -50,3 +50,16 @@ Content-Type: application/json
 
 ###
 POST  http://localhost:8081/user/deleteAll
+
+###
+
+POST http://localhost:8081/meeting/slots
+Content-Type: application/json 
+
+{
+    "name" : "Sandy",
+    "startHour" : "15",
+    "endHour" : "16"
+}
+
+
