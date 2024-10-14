@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Tabs, Button, Form } from "react-bootstrap";
-import ListTimeSlotsPage from "./listTimeSlotsPage"; // Import your ListTimeSlotsPage component
-import getUserInfo from "../../utilities/decodeJwt"; // Import your getUserInfo function to retrieve user data
-import "./homePage.css"; // Import custom CSS for fun styling
+import { Tab, Tabs, Button, Card, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import getUserInfo from "../../utilities/decodeJwt";
+import "./homePage.css";
 
 const HomePage = () => {
   const [user, setUser] = useState({});
-  const [key, setKey] = useState("timeSlots"); // Set "Time Slots" as the default tab
-  const [comments, setComments] = useState([]); // State for storing comments
-  const [newComment, setNewComment] = useState(""); // State for the new comment
-  const [questions, setQuestions] = useState([]); // State for storing questions
-  const [newQuestion, setNewQuestion] = useState(""); // State for the new question
-  const [funFactIndex, setFunFactIndex] = useState(0); // State to store the index of the current fun fact
-  const [csVsItIndex, setCsVsItIndex] = useState(0); // State to store the index of the current IT vs CS description
+  const [key, setKey] = useState("timeSlots");
+  const [slots, setSlots] = useState([]);
+  const [funFactIndex, setFunFactIndex] = useState(0);
+  const [csVsItIndex, setCsVsItIndex] = useState(0);
+  const navigate = useNavigate();
 
   // Array of fun facts
   const funFacts = [
@@ -43,9 +41,8 @@ const HomePage = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setFunFactIndex((prevIndex) => (prevIndex + 1) % funFacts.length);
-    }, 15000); // 15 seconds interval
+    }, 15000);
 
-    // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [funFacts.length]);
 
@@ -53,31 +50,39 @@ const HomePage = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCsVsItIndex((prevIndex) => (prevIndex + 1) % csVsItDifferences.length);
-    }, 15000); // 15 seconds interval
+    }, 15000);
 
-    // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [csVsItDifferences.length]);
 
   // Fetch the user's info when the page loads
   useEffect(() => {
-    const userInfo = getUserInfo(); // Fetch user info from local storage or token
-    setUser(userInfo); // Set the user info into the state
+    const userInfo = getUserInfo();
+    setUser(userInfo);
   }, []);
 
-  // Handle adding new comments
-  const handleAddComment = () => {
-    setComments([...comments, { text: newComment, author: user.username }]);
-    setNewComment("");
+  // Fetch time slots from backend
+  useEffect(() => {
+    fetch("http://localhost:8081/meeting/slots")
+      .then((response) => response.json())
+      .then((data) => setSlots(data))
+      .catch((error) => console.error("Error fetching slots:", error));
+  }, []);
+
+  // Handle deletion of a time slot
+  const handleDelete = (id) => {
+    fetch(`http://localhost:8081/meeting/slots/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Remove the deleted slot from the state
+          setSlots(slots.filter((slot) => slot._id !== id));
+        }
+      })
+      .catch((error) => console.error("Error deleting slot:", error));
   };
 
-  // Handle adding new questions
-  const handleAddQuestion = () => {
-    setQuestions([...questions, { text: newQuestion, author: user.username }]);
-    setNewQuestion("");
-  };
-
-  // If no user is found, display a message
   if (!user) {
     return (
       <div>
@@ -93,16 +98,48 @@ const HomePage = () => {
 
       {/* Add tab navigation to switch between "Time Slots" and "Home" */}
       <Tabs id="home-page-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
-        {/* Time Slots Tab - Placed First */}
+        {/* Time Slots Tab */}
         <Tab
           eventKey="timeSlots"
           title={<span className="tab-title">Time Slots</span>}
         >
-          {/* Render ListTimeSlotsPage inside the Time Slots tab */}
           <div className="tab-content">
             <h4 className="section-title">Newest Presentations</h4>
             <p>Check out the newest capstone presentations below:</p>
-            <ListTimeSlotsPage />
+
+            <Row>
+              {slots.map((slot) => (
+                <Col md={4} key={slot._id}>
+                  <Card
+                    className="mb-4 shadow-sm"
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <Card.Body>
+                      <Card.Title>{slot.name}</Card.Title>
+                      <Card.Text>
+                        <strong>Time:</strong> {slot.startHour} - {slot.endHour}
+                        <br />
+                        <strong>Location:</strong> TBD
+                      </Card.Text>
+                      <div className="d-flex justify-content-between">
+                        <Button
+                          variant="primary"
+                          onClick={() => navigate(`/details/${slot._id}`)}
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => handleDelete(slot._id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
           </div>
         </Tab>
 
@@ -113,7 +150,6 @@ const HomePage = () => {
             <div className="fun-box fun-fact">
               <h4>Fun Fact About Computer Science</h4>
               <p>{funFacts[funFactIndex]}</p>{" "}
-              {/* Display the current fun fact */}
             </div>
 
             {/* Capstone Advisors */}
@@ -136,74 +172,6 @@ const HomePage = () => {
                 <strong>Information Technology (IT):</strong>{" "}
                 {csVsItDifferences[csVsItIndex].it}
               </p>
-            </div>
-
-            {/* Question Section */}
-            <div className="fun-box question-box">
-              <h4>Ask a Question</h4>
-              <Form>
-                <Form.Group controlId="questionInput">
-                  <Form.Control
-                    type="text"
-                    placeholder="Ask your question..."
-                    value={newQuestion}
-                    onChange={(e) => setNewQuestion(e.target.value)}
-                  />
-                </Form.Group>
-                <Button variant="primary" onClick={handleAddQuestion}>
-                  Submit Question
-                </Button>
-              </Form>
-
-              {/* Display Questions */}
-              <div className="mt-4">
-                <h4>Questions</h4>
-                {questions.length > 0 ? (
-                  <ul>
-                    {questions.map((q, index) => (
-                      <li key={index}>
-                        <strong>{q.author}:</strong> {q.text}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No questions yet. Be the first to ask!</p>
-                )}
-              </div>
-            </div>
-
-            {/* Comment Section */}
-            <div className="fun-box comment-box">
-              <h4>Leave a Comment</h4>
-              <Form>
-                <Form.Group controlId="commentInput">
-                  <Form.Control
-                    type="text"
-                    placeholder="Leave a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                </Form.Group>
-                <Button variant="primary" onClick={handleAddComment}>
-                  Submit Comment
-                </Button>
-              </Form>
-
-              {/* Display Comments */}
-              <div className="mt-4">
-                <h4>Comments</h4>
-                {comments.length > 0 ? (
-                  <ul>
-                    {comments.map((c, index) => (
-                      <li key={index}>
-                        <strong>{c.author}:</strong> {c.text}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No comments yet. Be the first to comment!</p>
-                )}
-              </div>
             </div>
           </div>
         </Tab>

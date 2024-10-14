@@ -13,9 +13,10 @@ import { createContext, useState, useEffect } from "react";
 import getUserInfo from "./utilities/decodeJwt";
 import CreateTimeSlot from "./components/pages/createTimeslotPage";
 import ListTimeSlotsPage from "./components/pages/listTimeSlotsPage";
+import DetailPage from "./components/pages/detailPage"; // Ensure DetailPage is imported
+
 export const UserContext = createContext();
-//test change
-//test again
+
 const App = () => {
   const [user, setUser] = useState();
 
@@ -35,6 +36,8 @@ const App = () => {
           <Route path="/privateUserProfile" element={<PrivateUserProfile />} />
           <Route path="/CreateTimeSlot" element={<CreateTimeSlot />} />
           <Route path="/ListTimeSlots" element={<ListTimeSlotsPage />} />
+          {/* Add the DetailPage route with dynamic :id */}
+          <Route path="/details/:id" element={<DetailPage />} />
         </Routes>
       </UserContext.Provider>
     </>
