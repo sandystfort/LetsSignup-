@@ -117,7 +117,8 @@ const HomePage = () => {
                     <Card.Body>
                       <Card.Title>{slot.name}</Card.Title>
                       <Card.Text>
-                        <strong>Time:</strong> {slot.startHour} - {slot.endHour}
+                        <strong>Time:</strong> {slot.startHour}{" "}
+                        {slot.startMeridiem} - {slot.endHour} {slot.endMeridiem}
                         <br />
                         <strong>Location:</strong> TBD
                       </Card.Text>

@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // useParams to get the ID from the URL
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Card,
+  Row,
+  Col,
+  Badge,
+  Button,
+  Spinner,
+} from "react-bootstrap";
 
 const DetailPage = () => {
-  const { id } = useParams(); // Get the ID from the route
+  const { id } = useParams();
   const [slot, setSlot] = useState(null);
+  const navigate = useNavigate();
 
-  // Fetch the slot details based on the ID
   useEffect(() => {
     fetch(`http://localhost:8081/meeting/slots/${id}`)
       .then((response) => response.json())
@@ -14,22 +23,62 @@ const DetailPage = () => {
   }, [id]);
 
   if (!slot) {
-    return <div>Loading...</div>;
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" variant="primary" />
+        <p>Loading details...</p>
+      </Container>
+    );
   }
 
   return (
-    <div className="container">
-      <h1>Details for {slot.name}</h1>
-      <p>
-        <strong>Project Name:</strong> {slot.projectName}
-      </p>
-      <p>
-        <strong>Description:</strong> {slot.description}
-      </p>
-      <p>
-        <strong>Time:</strong> {slot.startHour} - {slot.endHour}
-      </p>
-    </div>
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={8}>
+          <Card
+            className="shadow-lg p-4"
+            style={{ border: "2px solid #FF6F00" }}
+          >
+            <Card.Header
+              style={{ backgroundColor: "#FF6F00", color: "#ffffff" }}
+              className="text-center"
+            >
+              <h2>Project Details</h2>
+            </Card.Header>
+            <Card.Body style={{ backgroundColor: "#f0f8ff" }}>
+              <Card.Title>
+                <h3 style={{ color: "#0056b3" }}>{slot.name}</h3>
+                <Badge
+                  bg="warning"
+                  className="ms-2"
+                  style={{ backgroundColor: "#FF6F00", color: "#ffffff" }}
+                >
+                  {slot.projectName}
+                </Badge>
+              </Card.Title>
+              <Card.Text>
+                <strong>Description:</strong> {slot.description}
+              </Card.Text>
+              <Card.Text>
+                <strong>Time:</strong> {slot.startHour} {slot.startMeridiem} -{" "}
+                {slot.endHour} {slot.endMeridiem}
+              </Card.Text>
+              <Button
+                variant="outline-primary"
+                onClick={() => navigate(-1)}
+                style={{
+                  backgroundColor: "#FF6F00",
+                  borderColor: "#FF6F00",
+                  color: "#ffffff",
+                }}
+              >
+                Back
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
