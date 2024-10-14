@@ -6,19 +6,49 @@ const timeslotModel = require("../models/timeslot");
 router.post("/slots", async (req, res) => {
   console.log("Received timeslot creation request:", req.body); // Log the received data
 
-  const { name, startHour, endHour } = req.body;
+  const {
+    name,
+    projectName,
+    startHour,
+    endHour,
+    description,
+    startMeridiem,
+    endMeridiem,
+  } = req.body;
 
   try {
+    // Log to confirm we received everything
+    console.log(
+      `Received data: name=${name}, projectName=${projectName}, description=${description}`
+    );
+
     // Create a new timeslot instance
     const newTimeslot = new timeslotModel({
       name,
+      projectName,
       startHour,
       endHour,
+      description,
+      startMeridiem,
+      endMeridiem,
     });
 
     // Save the timeslot in the database
     const savedTimeslot = await newTimeslot.save();
-    res.status(201).send(savedTimeslot);
+
+    // Log the saved data to check if it's correct
+    console.log("Saved Timeslot:", savedTimeslot);
+
+    // Return all the data back to the frontend
+    res.status(201).send({
+      name: savedTimeslot.name,
+      projectName: savedTimeslot.projectName,
+      startHour: savedTimeslot.startHour,
+      endHour: savedTimeslot.endHour,
+      description: savedTimeslot.description,
+      startMeridiem: savedTimeslot.startMeridiem,
+      endMeridiem: savedTimeslot.endMeridiem,
+    });
   } catch (err) {
     console.error("Error during timeslot creation:", err);
     res.status(500).send({ message: "Internal server error" });
@@ -54,12 +84,28 @@ router.get("/slots/:id", async (req, res) => {
 router.put("/slots/:id", async (req, res) => {
   console.log("Received timeslot update request:", req.body); // Log the received data
 
-  const { name, startHour, endHour } = req.body;
+  const {
+    name,
+    projectName,
+    startHour,
+    endHour,
+    description,
+    startMeridiem,
+    endMeridiem,
+  } = req.body;
 
   try {
     const updatedTimeslot = await timeslotModel.findByIdAndUpdate(
       req.params.id,
-      { name, startHour, endHour },
+      {
+        name,
+        projectName,
+        startHour,
+        endHour,
+        description,
+        startMeridiem,
+        endMeridiem,
+      },
       { new: true, runValidators: true }
     );
 

@@ -58,8 +58,33 @@ Content-Type: application/json
 
 {
     "name" : "Sandy",
-    "startHour" : "15",
-    "endHour" : "16"
+    "startHour" : 15,
+    "endHour" : 16
 }
 
+###
+# Create Time Slot
+POST http://localhost:8081/meeting/slots
+Content-Type: application/json 
+
+{
+    "name" : "Sandy",
+    "projectName" : "Let's Sign Up",
+    "description" : "Test Project Description",
+    "startHour" : 10,
+    "endHour" : 11,
+    "startMeridiem" : "AM",
+    "endMeridiem" : "AM"
+}
+
+###
+GET http://localhost:8081/meeting/slots
+Content-Type: application/json
+
+###
+GET http://localhost:8081/meeting/slots/634edb2a16710b2cda6fb370
+Content-Type: application/json
+
+###
+DELETE http://localhost:8081/meeting/slots/634edb2a16710b2cda6fb370
 

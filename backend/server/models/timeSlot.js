@@ -5,6 +5,10 @@ const timeslotSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  projectName: {
+    type: String,
+    required: true,
+  },
   startHour: {
     type: Number,
     required: true,
@@ -16,6 +20,20 @@ const timeslotSchema = new mongoose.Schema({
     required: true,
     min: 0,
     max: 23,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  startMeridiem: {
+    type: String,
+    required: true,
+    enum: ["AM", "PM"],
+  },
+  endMeridiem: {
+    type: String,
+    required: true,
+    enum: ["AM", "PM"],
   },
 });
 

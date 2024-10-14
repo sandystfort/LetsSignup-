@@ -1,0 +1,77 @@
+.create-timeslot-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  background-color: #f76b1c; /* Orange background */
+  color: #fff; /* White text for better contrast */
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff; /* White text */
+}
+
+.timeslot-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #fff; /* White text */
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #333; /* Black border */
+  border-radius: 5px;
+  background-color: #fff; /* White input background */
+  color: #333; /* Black text for inputs */
+}
+
+.form-control-select {
+  width: 100px;
+  margin-left: 10px;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #333; /* Black border */
+  border-radius: 5px;
+  background-color: #fff; /* White select background */
+  color: #333; /* Black text */
+}
+
+.input-with-select {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #333; /* Black button */
+  color: white;
+}
+
+.message {
+  margin-top: 20px;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+}
