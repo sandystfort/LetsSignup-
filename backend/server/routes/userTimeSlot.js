@@ -1,3 +1,8 @@
+const express = require("express");
+const router = express.Router();
+
+const timeslotModel = require("../models/timeslot");
+
 // Create a new timeslot
 router.post("/slots", async (req, res) => {
   console.log("Received timeslot creation request:", req.body);
@@ -13,18 +18,19 @@ router.post("/slots", async (req, res) => {
   } = req.body;
 
   try {
-    // Convert startHour and endHour into a comparable format (24-hour)
-    const startTime = startHour; // Already converted to 24-hour format in the frontend
+    const startTime = startHour;
     const endTime = endHour;
 
     // Check for conflicts with existing timeslots
     const existingSlot = await timeslotModel.findOne({
       $or: [
         {
-          startHour: { $lt: endTime, $gte: startTime }, // Existing slot overlaps the start time
+          startHour: { $lt: endTime },
+          endHour: { $gt: startTime },
         },
         {
-          endHour: { $gt: startTime, $lte: endTime }, // Existing slot overlaps the end time
+          startHour: { $gte: startTime },
+          endHour: { $lte: endTime },
         },
       ],
     });
@@ -49,17 +55,52 @@ router.post("/slots", async (req, res) => {
     const savedTimeslot = await newTimeslot.save();
     console.log("Saved Timeslot:", savedTimeslot);
 
-    res.status(201).send({
-      name: savedTimeslot.name,
-      projectName: savedTimeslot.projectName,
-      startHour: savedTimeslot.startHour,
-      endHour: savedTimeslot.endHour,
-      description: savedTimeslot.description,
-      startMeridiem: savedTimeslot.startMeridiem,
-      endMeridiem: savedTimeslot.endMeridiem,
-    });
+    res.status(201).send(savedTimeslot);
   } catch (err) {
     console.error("Error during timeslot creation:", err);
     res.status(500).send({ message: "Internal server error" });
   }
 });
+
+// Get all timeslots
+router.get("/slots", async (req, res) => {
+  try {
+    const timeslots = await timeslotModel.find();
+    res.status(200).send(timeslots);
+  } catch (error) {
+    console.error("Error fetching timeslots:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+// Get a single timeslot by ID
+router.get("/slots/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const timeslot = await timeslotModel.findById(id);
+    if (!timeslot) {
+      return res.status(404).send({ message: "Time slot not found" });
+    }
+    res.status(200).send(timeslot);
+  } catch (error) {
+    console.error("Error fetching timeslot details:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+// Delete a timeslot by ID
+router.delete("/slots/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedSlot = await timeslotModel.findByIdAndDelete(id);
+    if (!deletedSlot) {
+      return res.status(404).send({ message: "Time slot not found" });
+    }
+    res.status(200).send({ message: "Time slot deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting timeslot:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+module.exports = router; // Export the router

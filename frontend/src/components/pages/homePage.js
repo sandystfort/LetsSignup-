@@ -71,13 +71,17 @@ const HomePage = () => {
 
   // Handle deletion of a time slot
   const handleDelete = (id) => {
+    console.log("Attempting to delete slot with ID:", id);
     fetch(`http://localhost:8081/meeting/slots/${id}`, {
       method: "DELETE",
     })
       .then((response) => {
         if (response.ok) {
+          console.log("Slot deleted successfully");
           // Remove the deleted slot from the state
           setSlots(slots.filter((slot) => slot._id !== id));
+        } else {
+          console.error("Failed to delete slot");
         }
       })
       .catch((error) => console.error("Error deleting slot:", error));
@@ -125,7 +129,13 @@ const HomePage = () => {
                       <div className="d-flex justify-content-between">
                         <Button
                           variant="primary"
-                          onClick={() => navigate(`/details/${slot._id}`)}
+                          onClick={() => {
+                            console.log(
+                              "Navigating to details for slot with ID:",
+                              slot._id
+                            );
+                            navigate(`/details/${slot._id}`);
+                          }}
                         >
                           View Details
                         </Button>

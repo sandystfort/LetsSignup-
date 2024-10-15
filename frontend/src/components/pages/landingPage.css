@@ -1,0 +1,56 @@
+/* Overall styling for the landing card */
+.landing-card {
+  background-color: #fff8e1; /* Light orange background */
+  border: 2px solid #ff8c00; /* Vibrant orange border */
+  border-radius: 20px; /* More rounded corners for a friendly feel */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+}
+
+.landing-card:hover {
+  transform: scale(1.05); /* Enlarges slightly on hover */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Deepens shadow on hover */
+}
+
+/* Custom vibrant orange and blue for Salem State Vikings colors */
+.text-orange {
+  color: #ff6f00 !important; /* Vibrant Orange for title */
+}
+
+.text-blue {
+  color: #0073e6 !important; /* Bright Blue for subtitle */
+}
+
+/* Custom buttons for consistent styling */
+.btn-custom-orange {
+  background-color: #ff6f00; /* Vibrant orange button */
+  border: none;
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-custom-orange:hover {
+  background-color: #e65c00; /* Slightly darker orange on hover */
+  color: #fff;
+}
+
+.btn-outline-custom-blue {
+  color: #0073e6; /* Blue text color for outline button */
+  border: 2px solid #0073e6; /* Blue border */
+  font-weight: bold;
+}
+
+.btn-outline-custom-blue:hover {
+  background-color: #0073e6; /* Fill with blue on hover */
+  color: #fff; /* White text on hover */
+}
+
+.lead {
+  font-size: 1.3rem; /* Larger font for emphasis */
+}
+
+/* Responsive card size for mobile */
+@media (max-width: 768px) {
+  .landing-card {
+    width: 90%; /* Width adjustment for smaller screens */
+  }
+}
