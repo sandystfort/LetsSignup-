@@ -27,32 +27,27 @@ const RegisterPage = () => {
   };
 
   useEffect(() => {
-    if (light) {
-      setBgColor("white");
-      setBgText("Dark mode");
-    } else {
-      setBgColor(SECONDARY_COLOR);
-      setBgText("Light mode");
-    }
+    setBgColor(light ? "white" : SECONDARY_COLOR);
+    setBgText(light ? "Dark mode" : "Light mode");
   }, [light]);
 
-  let labelStyling = {
+  const labelStyling = {
     color: PRIMARY_COLOR,
     fontWeight: "bold",
     textDecoration: "none",
   };
-  let backgroundStyling = { background: bgColor };
-  let buttonStyling = {
+  const backgroundStyling = { background: bgColor };
+  const buttonStyling = {
     background: PRIMARY_COLOR,
     borderStyle: "none",
-    color: bgColor,
+    color: "white",
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(url, data);
+      await axios.post(url, data); // Removed the assignment to `res` as it is unused
       navigate("/login");
     } catch (error) {
       if (
@@ -98,14 +93,13 @@ const RegisterPage = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicUsername">
-                  <Form.Label style={labelStyling}>
-                    Username (Optional)
-                  </Form.Label>
+                  <Form.Label style={labelStyling}>Username</Form.Label>
                   <Form.Control
                     type="text"
                     name="username"
                     onChange={handleChange}
-                    placeholder="Enter Username (optional)"
+                    placeholder="Enter Username"
+                    required // Make username field required in the form
                   />
                 </Form.Group>
 
@@ -147,7 +141,7 @@ const RegisterPage = () => {
                 </div>
 
                 {error && (
-                  <div style={labelStyling} className="pt-3">
+                  <div style={{ color: PRIMARY_COLOR }} className="pt-3">
                     {error}
                   </div>
                 )}

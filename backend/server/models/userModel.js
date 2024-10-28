@@ -1,27 +1,32 @@
 const mongoose = require("mongoose");
 
 // User schema/model
-const newUserSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
       required: true,
       label: "First Name",
+      trim: true, // Trim whitespace
     },
     lastName: {
       type: String,
       required: true,
       label: "Last Name",
+      trim: true, // Trim whitespace
     },
     username: {
       type: String,
       required: false, // Username is optional
       label: "Username",
+      trim: true, // Trim whitespace
     },
     email: {
       type: String,
       required: true,
       label: "Email",
+      unique: true, // Ensure unique emails
+      trim: true, // Trim whitespace
     },
     password: {
       required: true,
@@ -40,4 +45,5 @@ const newUserSchema = new mongoose.Schema(
   { collection: "users" }
 );
 
-module.exports = mongoose.model("users", newUserSchema);
+// Export the User model
+module.exports = mongoose.model("User", userSchema); // Use "User" as the model name

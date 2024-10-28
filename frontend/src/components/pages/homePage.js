@@ -6,80 +6,55 @@ import "./homePage.css";
 
 const HomePage = () => {
   const [user, setUser] = useState({});
-  const [key, setKey] = useState("timeSlots");
+  const [key, setKey] = useState("personalSlots");
   const [slots, setSlots] = useState([]);
-  const [funFactIndex, setFunFactIndex] = useState(0);
-  const [csVsItIndex, setCsVsItIndex] = useState(0);
+  const [personalSlots, setPersonalSlots] = useState([]);
   const navigate = useNavigate();
 
-  // Array of fun facts
-  const funFacts = [
-    "Did you know? The first 1GB hard drive, released by IBM in 1980, weighed over 500 pounds and cost over $40,000!",
-    "Did you know? The first computer virus was created in 1986 and was called Brain.",
-    "Did you know? The first domain name ever registered was Symbolics.com, on March 15, 1985.",
-    "Did you know? More than 500 hours of video are uploaded to YouTube every minute.",
-    "Did you know? The first electronic computer, ENIAC, weighed more than 27 tons and took up 1800 square feet.",
-  ];
-
-  // Array of CS vs IT differences
-  const csVsItDifferences = [
-    {
-      cs: "Computer Science (CS) focuses on software development, algorithms, and the theoretical foundation of computing systems. It involves creating new technologies and solving computational problems.",
-      it: "Information Technology (IT) focuses on applying technology solutions to business problems, managing IT infrastructures, and ensuring systems run smoothly in practical environments.",
-    },
-    {
-      cs: "CS often involves research into areas like artificial intelligence, machine learning, and software engineering.",
-      it: "IT professionals work on maintaining network infrastructures, securing data, and managing day-to-day operations in a business environment.",
-    },
-    {
-      cs: "CS is about creating and developing software from scratch, including designing algorithms, databases, and systems.",
-      it: "IT is about configuring, maintaining, and securing existing systems, and ensuring they run efficiently.",
-    },
-  ];
-
-  // Rotate fun facts every 15 seconds
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setFunFactIndex((prevIndex) => (prevIndex + 1) % funFacts.length);
-    }, 15000);
-
-    return () => clearInterval(intervalId);
-  }, [funFacts.length]);
-
-  // Rotate CS vs IT differences every 15 seconds
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCsVsItIndex((prevIndex) => (prevIndex + 1) % csVsItDifferences.length);
-    }, 15000);
-
-    return () => clearInterval(intervalId);
-  }, [csVsItDifferences.length]);
-
-  // Fetch the user's info when the page loads
   useEffect(() => {
     const userInfo = getUserInfo();
     setUser(userInfo);
+    console.log("Loaded user info:", userInfo);
   }, []);
 
-  // Fetch time slots from backend
   useEffect(() => {
-    fetch("http://localhost:8081/meeting/slots")
-      .then((response) => response.json())
-      .then((data) => setSlots(data))
-      .catch((error) => console.error("Error fetching slots:", error));
-  }, []);
+    const fetchSlots = () => {
+      if (!user || !user.id) return;
 
-  // Handle deletion of a time slot
+      fetch("http://localhost:8081/meeting/slots")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setSlots(data);
+
+          // Filter to get personal slots based on user ID
+          const userSlots = data.filter(
+            (slot) => slot.createdBy && slot.createdBy.toString() === user.id
+          );
+
+          setPersonalSlots(userSlots);
+          console.log("Fetched slots:", data);
+          console.log("User slots:", userSlots);
+        })
+        .catch((error) => console.error("Error fetching slots:", error));
+    };
+
+    fetchSlots();
+  }, [user]);
+
   const handleDelete = (id) => {
     console.log("Attempting to delete slot with ID:", id);
-    fetch(`http://localhost:8081/meeting/slots/${id}`, {
-      method: "DELETE",
-    })
+    fetch(`http://localhost:8081/meeting/slots/${id}`, { method: "DELETE" })
       .then((response) => {
         if (response.ok) {
           console.log("Slot deleted successfully");
-          // Remove the deleted slot from the state
+          // Update state to remove the deleted slot from both personal and all slots
           setSlots(slots.filter((slot) => slot._id !== id));
+          setPersonalSlots(personalSlots.filter((slot) => slot._id !== id));
         } else {
           console.error("Failed to delete slot");
         }
@@ -87,7 +62,7 @@ const HomePage = () => {
       .catch((error) => console.error("Error deleting slot:", error));
   };
 
-  if (!user) {
+  if (!user || !user.id) {
     return (
       <div>
         <h4>Log in to view this page.</h4>
@@ -100,17 +75,61 @@ const HomePage = () => {
       <h3 className="welcome-message">Welcome, {user.username}</h3>
       <p>Your registered email is {user.email}</p>
 
-      {/* Add tab navigation to switch between "Time Slots" and "Home" */}
       <Tabs id="home-page-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
-        {/* Time Slots Tab */}
         <Tab
-          eventKey="timeSlots"
-          title={<span className="tab-title">Time Slots</span>}
+          eventKey="personalSlots"
+          title={<span className="tab-title">My Time Slots</span>}
         >
           <div className="tab-content">
-            <h4 className="section-title">Newest Presentations</h4>
-            <p>Check out the newest capstone presentations below:</p>
+            <h4 className="section-title">Your Time Slots</h4>
+            <Row>
+              {personalSlots.length > 0 ? (
+                personalSlots.map((slot) => (
+                  <Col md={4} key={slot._id}>
+                    <Card
+                      className="mb-4 shadow-sm"
+                      style={{ borderRadius: "10px" }}
+                    >
+                      <Card.Body>
+                        <Card.Title>{slot.name}</Card.Title>
+                        <Card.Text>
+                          <strong>Time:</strong> {slot.startHour}{" "}
+                          {slot.startMeridiem} - {slot.endHour}{" "}
+                          {slot.endMeridiem}
+                          <br />
+                          <strong>Project:</strong> {slot.projectName}
+                        </Card.Text>
+                        <div className="d-flex justify-content-between">
+                          <Button
+                            variant="primary"
+                            onClick={() => navigate(`/details/${slot._id}`)}
+                          >
+                            View Details
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => handleDelete(slot._id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <p>No personal time slots available.</p>
+              )}
+            </Row>
+          </div>
+        </Tab>
 
+        <Tab
+          eventKey="allSlots"
+          title={<span className="tab-title">View All Meetings</span>}
+        >
+          <div className="tab-content">
+            <h4 className="section-title">All Registered Time Slots</h4>
             <Row>
               {slots.map((slot) => (
                 <Col md={4} key={slot._id}>
@@ -124,66 +143,31 @@ const HomePage = () => {
                         <strong>Time:</strong> {slot.startHour}{" "}
                         {slot.startMeridiem} - {slot.endHour} {slot.endMeridiem}
                         <br />
-                        <strong>Location:</strong> TBD
+                        <strong>Project:</strong> {slot.projectName}
                       </Card.Text>
                       <div className="d-flex justify-content-between">
                         <Button
                           variant="primary"
-                          onClick={() => {
-                            console.log(
-                              "Navigating to details for slot with ID:",
-                              slot._id
-                            );
-                            navigate(`/details/${slot._id}`);
-                          }}
+                          onClick={() => navigate(`/details/${slot._id}`)}
                         >
                           View Details
                         </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => handleDelete(slot._id)}
-                        >
-                          Delete
-                        </Button>
+                        {/* Show delete button only for user's own slots */}
+                        {slot.createdBy &&
+                          slot.createdBy.toString() === user.id && (
+                            <Button
+                              variant="danger"
+                              onClick={() => handleDelete(slot._id)}
+                            >
+                              Delete
+                            </Button>
+                          )}
                       </div>
                     </Card.Body>
                   </Card>
                 </Col>
               ))}
             </Row>
-          </div>
-        </Tab>
-
-        {/* Home Tab */}
-        <Tab eventKey="home" title={<span className="tab-title">Home</span>}>
-          <div className="tab-content">
-            {/* Rotating Fun Fact */}
-            <div className="fun-box fun-fact">
-              <h4>Fun Fact About Computer Science</h4>
-              <p>{funFacts[funFactIndex]}</p>{" "}
-            </div>
-
-            {/* Capstone Advisors */}
-            <div className="fun-box capstone-advisors">
-              <h4>Capstone Advisors</h4>
-              <ul>
-                <li>Dr. Kaur</li>
-                <li>Dr. Brockenbrough</li>
-              </ul>
-            </div>
-
-            {/* Rotating IT vs CS Section */}
-            <div className="fun-box it-vs-cs">
-              <h4>Difference Between IT and Computer Science</h4>
-              <p>
-                <strong>Computer Science (CS):</strong>{" "}
-                {csVsItDifferences[csVsItIndex].cs}
-              </p>
-              <p>
-                <strong>Information Technology (IT):</strong>{" "}
-                {csVsItDifferences[csVsItIndex].it}
-              </p>
-            </div>
           </div>
         </Tab>
       </Tabs>

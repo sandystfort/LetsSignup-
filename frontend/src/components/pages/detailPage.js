@@ -13,14 +13,39 @@ import {
 const DetailPage = () => {
   const { id } = useParams();
   const [slot, setSlot] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:8081/meeting/slots/${id}`)
-      .then((response) => response.json())
-      .then((data) => setSlot(data))
-      .catch((error) => console.error("Error fetching slot details:", error));
+    const fetchSlotDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/meeting/slots/${id}`
+        );
+        if (!response.ok) {
+          throw new Error("Slot not found");
+        }
+        const data = await response.json();
+        setSlot(data);
+      } catch (error) {
+        console.error("Error fetching slot details:", error);
+        setError(error.message);
+      }
+    };
+
+    fetchSlotDetails();
   }, [id]);
+
+  if (error) {
+    return (
+      <Container className="text-center mt-5">
+        <h4 className="text-danger">{error}</h4>
+        <Button variant="outline-primary" onClick={() => navigate(-1)}>
+          Back
+        </Button>
+      </Container>
+    );
+  }
 
   if (!slot) {
     return (

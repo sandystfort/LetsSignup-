@@ -10,23 +10,24 @@ const newUserValidation = (data) => {
       .email("Please input a valid email")
       .nonempty("Email is required"),
     password: z.string().min(8, "Password must be 8 or more characters").trim(),
-
-    // Make username optional
-    username: z
-      .string()
-      .min(6, "Username must be 6 characters or more")
-      .optional()
-      .or(z.literal("")), // Accepts an empty string as valid
+    username: z.string().min(6, "Username must be 6 characters or more"), // Make username required
   });
 
   return registerValidationSchema.safeParse(data); // Returns success or error
 };
+
+// Validates when a user logs in
 const userLoginValidation = (data) => {
   const loginValidationSchema = z.object({
+    email: z
+      .string()
+      .email("Please input a valid email")
+      .nonempty("Email is required"),
     password: z.string().min(8, "Password must be 8 or more characters").trim(),
   });
 
   return loginValidationSchema.safeParse(data);
 };
+
 module.exports.newUserValidation = newUserValidation;
 module.exports.userLoginValidation = userLoginValidation;

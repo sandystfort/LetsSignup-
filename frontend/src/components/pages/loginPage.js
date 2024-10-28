@@ -11,7 +11,7 @@ const url = "http://localhost:8081/user/login";
 
 const LoginPage = () => {
   const [user, setUser] = useState(null);
-  const [data, setData] = useState({ email: "", password: "" });
+  const [data, setData] = useState({ email: "", username: "", password: "" });
   const [error, setError] = useState("");
   const [light, setLight] = useState(false);
   const [bgColor, setBgColor] = useState(SECONDARY_COLOR);
@@ -77,9 +77,24 @@ const LoginPage = () => {
                     onChange={handleChange}
                     placeholder="Enter email"
                     value={data.email}
-                    required
                   />
                 </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicUsername">
+                  <Form.Label
+                    style={{ color: PRIMARY_COLOR, fontWeight: "bold" }}
+                  >
+                    Username
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    onChange={handleChange}
+                    placeholder="Enter username"
+                    value={data.username}
+                  />
+                </Form.Group>
+
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label
                     style={{ color: PRIMARY_COLOR, fontWeight: "bold" }}
@@ -95,6 +110,7 @@ const LoginPage = () => {
                     required
                   />
                 </Form.Group>
+
                 <Form.Text className="text-muted pt-1">
                   Don't have an account?
                   <Link

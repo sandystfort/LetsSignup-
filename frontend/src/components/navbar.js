@@ -25,7 +25,7 @@ export default function Navbar() {
           <Nav.Link href="/">Start</Nav.Link>
           <Nav.Link href="/home">Home</Nav.Link>
           <Nav.Link href="/privateUserProfile">Profile</Nav.Link>
-          <Nav.Link href="/CreateTimeSlot">CreateTimeSlot</Nav.Link>
+          <Nav.Link href="/CreateTimeSlot">Pick a Slot</Nav.Link>
         </Nav>
       </Container>
     </ReactNavbar>

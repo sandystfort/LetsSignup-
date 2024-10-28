@@ -1,63 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 import "./createTimeSlot.css";
+import getUserInfo from "../../utilities/decodeJwt";
 
-const CreateTimeSlot = () => {
+const CreateTimeSlotPage = ({ onCreateSlot }) => {
   const [name, setName] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [startHour, setStartHour] = useState("");
-  const [startMeridiem, setStartMeridiem] = useState("AM");
-  const [endHour, setEndHour] = useState("");
-  const [endMeridiem, setEndMeridiem] = useState("AM");
+  const [startTime, setStartTime] = useState("7:00 AM");
+  const [endTime, setEndTime] = useState("5:00 PM");
   const [description, setDescription] = useState("");
+  const [day, setDay] = useState("Monday");
   const [message, setMessage] = useState("");
-  const [existingSlots, setExistingSlots] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchExistingSlots = async () => {
-      try {
-        const response = await fetch("http://localhost:8081/meeting/slots");
-        const data = await response.json();
-        setExistingSlots(data);
-      } catch (error) {
-        console.error("Error fetching existing slots:", error);
-      }
-    };
-    fetchExistingSlots();
-  }, []);
-
-  const convertTo24Hour = (hour, meridiem) => {
-    let convertedHour = parseInt(hour, 10);
-    if (meridiem === "PM" && convertedHour < 12) {
-      convertedHour += 12;
-    } else if (meridiem === "AM" && convertedHour === 12) {
-      convertedHour = 0;
-    }
-    return convertedHour;
-  };
-
-  const checkForConflicts = (start24Hour, end24Hour) => {
-    return existingSlots.some((slot) => {
-      const slotStart = slot.startHour;
-      const slotEnd = slot.endHour;
-      return (
-        (start24Hour >= slotStart && start24Hour < slotEnd) ||
-        (end24Hour > slotStart && end24Hour <= slotEnd) ||
-        (start24Hour <= slotStart && end24Hour >= slotEnd)
-      );
-    });
-  };
+  const userInfo = getUserInfo();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const start24Hour = convertTo24Hour(startHour, startMeridiem);
-    const end24Hour = convertTo24Hour(endHour, endMeridiem);
-
-    if (checkForConflicts(start24Hour, end24Hour)) {
-      setMessage(
-        "Selected time slot conflicts with an existing booking. Please choose another time."
-      );
-      return;
-    }
 
     const response = await fetch("http://localhost:8081/meeting/slots", {
       method: "POST",
@@ -65,27 +26,48 @@ const CreateTimeSlot = () => {
       body: JSON.stringify({
         name,
         projectName,
-        startHour: start24Hour,
-        endHour: end24Hour,
+        startTime,
+        endTime,
         description,
-        startMeridiem,
-        endMeridiem,
+        day,
+        userId: userInfo.id,
       }),
     });
 
     if (response.ok) {
       const data = await response.json();
       setMessage(
-        `Time Slot created for ${data.name} (${data.projectName}) from ${startHour} ${startMeridiem} to ${endHour} ${endMeridiem}`
+        `Time Slot created for ${data.name} (${data.projectName}) from ${startTime} to ${endTime}` // Use backticks here
       );
+      ///onCreateSlot(data); // Call the function passed down from HomePage
+      setShowModal(true);
     } else {
       setMessage("Failed to create time slot");
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate("/home");
+  };
+
+  const timeOptions = [
+    "7:00 AM",
+    "8:00 AM",
+    "9:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "1:00 PM",
+    "2:00 PM",
+    "3:00 PM",
+    "4:00 PM",
+    "5:00 PM",
+  ];
+
   return (
     <div className="create-timeslot-container">
-      <h2>Create Time Slot</h2>
+      <h2>Create a Slot</h2>
       <form onSubmit={handleSubmit} className="timeslot-form">
         <div className="form-group">
           <label>Name:</label>
@@ -120,58 +102,69 @@ const CreateTimeSlot = () => {
           />
         </div>
         <div className="form-group">
-          <label>Start Hour:</label>
-          <div className="input-with-select">
-            <input
-              type="number"
-              value={startHour}
-              onChange={(e) => setStartHour(e.target.value)}
-              min="1"
-              max="12"
-              required
-              className="form-control"
-              placeholder="1 - 12"
-            />
-            <select
-              value={startMeridiem}
-              onChange={(e) => setStartMeridiem(e.target.value)}
-              className="form-control-select"
-            >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
-          </div>
+          <label>Day:</label>
+          <select
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+            className="form-control"
+          >
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+          </select>
         </div>
         <div className="form-group">
-          <label>End Hour:</label>
-          <div className="input-with-select">
-            <input
-              type="number"
-              value={endHour}
-              onChange={(e) => setEndHour(e.target.value)}
-              min="1"
-              max="12"
-              required
-              className="form-control"
-              placeholder="1 - 12"
-            />
-            <select
-              value={endMeridiem}
-              onChange={(e) => setEndMeridiem(e.target.value)}
-              className="form-control-select"
-            >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
-          </div>
+          <label>Start Time:</label>
+          <select
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="form-control"
+            required
+          >
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>End Time:</label>
+          <select
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="form-control"
+            required
+          >
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
         </div>
         <button type="submit" className="btn btn-primary">
           Create Time Slot
         </button>
       </form>
+
       {message && <p className="message">{message}</p>}
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Time Slot Created</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Your time slot has been created successfully!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseModal}>
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default CreateTimeSlot;
+export default CreateTimeSlotPage;

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Card from "react-bootstrap/Card"; // Import Card from Bootstrap
-import Form from "react-bootstrap/Form"; // Import Form from Bootstrap
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import getUserInfo from "../../utilities/decodeJwt";
 
 const PrivateUserProfile = () => {
   const [show, setShow] = useState(false);
   const [user, setUser] = useState({});
-  const [editMode, setEditMode] = useState(false); // Toggle for editing personal info
-  const [submissions, setSubmissions] = useState([]); // Store user submissions (timeslots)
+  const [editMode, setEditMode] = useState(false);
   const [updatedUser, setUpdatedUser] = useState({});
   const navigate = useNavigate();
 
@@ -23,25 +22,12 @@ const PrivateUserProfile = () => {
     navigate("/");
   };
 
-  // Fetch user info and submissions on load
+  // Fetch user info on load
   useEffect(() => {
     const userInfo = getUserInfo();
     setUser(userInfo);
     setUpdatedUser(userInfo);
-    fetchUserSubmissions(); // Fetch user submissions (or timeslots)
   }, []);
-
-  // Fetch user's submissions (or timeslots)
-  const fetchUserSubmissions = async () => {
-    try {
-      const response = await fetch("http://localhost:8081/meeting/slots"); // Adjust this API endpoint if needed
-      const data = await response.json();
-      console.log("Submissions fetched in profile: ", data);
-      setSubmissions(data); // Set the submissions (or timeslots)
-    } catch (error) {
-      console.error("Error fetching submissions: ", error);
-    }
-  };
 
   // Handle input changes for updating personal info
   const handleChange = (e) => {
@@ -77,28 +63,24 @@ const PrivateUserProfile = () => {
       </div>
     );
 
-  const { id, email, username, password } = user;
-
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
           <Card className="p-4 shadow-sm">
             <Card.Body className="text-center">
-              <h1>{username}</h1>
-
-              {/* User Info */}
+              <h1>{user.username}</h1>
               <p className="lead">
-                Welcome, <strong>@{username}</strong>!
+                Welcome, <strong>@{user.username}</strong>!
               </p>
               <p>
-                <strong>User ID:</strong> {id}
+                <strong>User ID:</strong> {user.id}
               </p>
               <p>
-                <strong>Email:</strong> {email}
+                <strong>Email:</strong> {user.email}
               </p>
               <p>
-                <strong>Password:</strong> {password} (hashed)
+                <strong>Password:</strong> {user.password} (hashed)
               </p>
 
               {/* Edit Personal Info Form */}
@@ -174,25 +156,6 @@ const PrivateUserProfile = () => {
                 </Modal.Footer>
               </Modal>
             </Card.Body>
-          </Card>
-        </div>
-
-        {/* User Submissions */}
-        <div className="col-md-8 mt-4">
-          <Card className="p-4 shadow-sm">
-            <h3 className="text-center">Your Submissions</h3>
-            {submissions.length > 0 ? (
-              <ul className="list-group list-group-flush">
-                {submissions.map((submission) => (
-                  <li className="list-group-item" key={submission._id}>
-                    <strong>{submission.name}</strong>: {submission.startHour} -{" "}
-                    {submission.endHour}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center mt-3">You have no submissions yet.</p>
-            )}
           </Card>
         </div>
       </div>
