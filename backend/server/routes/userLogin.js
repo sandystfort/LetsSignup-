@@ -40,7 +40,8 @@ router.post("/login", async (req, res) => {
     const accessToken = generateAccessToken(
       user._id,
       user.email,
-      user.username
+      user.username,
+      user.isAdmin
     );
     console.log("Generated access token for user:", user.email);
 
