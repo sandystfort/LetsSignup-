@@ -25,8 +25,8 @@ const PrivateUserProfile = () => {
   // Fetch user info on load
   useEffect(() => {
     const userInfo = getUserInfo();
-    setUser(userInfo);
-    setUpdatedUser(userInfo);
+    setUser(userInfo.id);
+    setUpdatedUser(userInfo.id);
   }, []);
 
   // Handle input changes for updating personal info
@@ -74,7 +74,7 @@ const PrivateUserProfile = () => {
                 Welcome, <strong>@{user.username}</strong>!
               </p>
               <p>
-                <strong>User ID:</strong> {user.id}
+                <strong>User ID:</strong> {user.userId}
               </p>
               <p>
                 <strong>Email:</strong> {user.email}
