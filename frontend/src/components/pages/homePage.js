@@ -47,19 +47,27 @@ const HomePage = () => {
   }, [user]);
 
   const handleDelete = (id) => {
-    console.log("Attempting to delete slot with ID:", id);
-    fetch(`http://localhost:8081/meeting/slots/${id}`, { method: "DELETE" })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Slot deleted successfully");
-          // Update state to remove the deleted slot from both personal and all slots
-          setSlots(slots.filter((slot) => slot._id !== id));
-          setPersonalSlots(personalSlots.filter((slot) => slot._id !== id));
-        } else {
-          console.error("Failed to delete slot");
-        }
-      })
-      .catch((error) => console.error("Error deleting slot:", error));
+    if (window.confirm("Are you sure you want to delete this slot?")) {
+      console.log("Attempting to delete slot with ID:", id);
+      fetch(`http://localhost:8081/meeting/slots/${id}`, { method: "DELETE" })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Slot deleted successfully");
+            // Update state to remove the deleted slot from both personal and all slots
+            const updatedSlots = slots.filter((slot) => slot._id !== id);
+            const updatedPersonalSlots = personalSlots.filter(
+              (slot) => slot._id !== id
+            );
+            setSlots(updatedSlots);
+            setPersonalSlots(updatedPersonalSlots);
+            console.log("Updated slots:", updatedSlots);
+            console.log("Updated personal slots:", updatedPersonalSlots);
+          } else {
+            console.error("Failed to delete slot");
+          }
+        })
+        .catch((error) => console.error("Error deleting slot:", error));
+    }
   };
 
   if (!user || !user.id) {

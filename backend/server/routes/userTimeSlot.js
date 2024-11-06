@@ -108,4 +108,19 @@ router.get("/slots/:id", async (req, res) => {
   }
 });
 
+// DELETE a specific timeslot by ID
+router.delete("/slots/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedSlot = await timeslotModel.findByIdAndDelete(id);
+    if (!deletedSlot) {
+      return res.status(404).send({ message: "Slot not found" });
+    }
+    res.status(200).send({ message: "Slot deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting slot:", err);
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
 module.exports = router;
