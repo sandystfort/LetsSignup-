@@ -25,8 +25,8 @@ const PrivateUserProfile = () => {
   // Fetch user info on load
   useEffect(() => {
     const userInfo = getUserInfo();
-    setUser(userInfo.id);
-    setUpdatedUser(userInfo.id);
+    setUser(userInfo); // Set user to full userInfo object
+    setUpdatedUser(userInfo); // Set updatedUser to full userInfo object for edit mode
   }, []);
 
   // Handle input changes for updating personal info
@@ -41,7 +41,6 @@ const PrivateUserProfile = () => {
   // Submit updated user information
   const handleUpdate = async (e) => {
     e.preventDefault();
-    // Example API call to update user info
     const response = await fetch("http://localhost:8081/user/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,7 +55,7 @@ const PrivateUserProfile = () => {
     }
   };
 
-  if (!user)
+  if (!user.username || !user.email)
     return (
       <div>
         <h4>Log in to view this page.</h4>
@@ -74,13 +73,13 @@ const PrivateUserProfile = () => {
                 Welcome, <strong>@{user.username}</strong>!
               </p>
               <p>
-                <strong>User ID:</strong> {user.userId}
+                <strong>User ID:</strong> {user.id}
               </p>
               <p>
                 <strong>Email:</strong> {user.email}
               </p>
               <p>
-                <strong>Password:</strong> {user.password} (hashed)
+                <strong>Password:</strong> {user.password ? "****" : "(hashed)"}
               </p>
 
               {/* Edit Personal Info Form */}
