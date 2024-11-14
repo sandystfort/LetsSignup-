@@ -11,6 +11,9 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
   const [endTime, setEndTime] = useState("5:00 PM");
   const [description, setDescription] = useState("");
   const [day, setDay] = useState("Monday");
+  const [dayOfMonth, setDayOfMonth] = useState(1);
+  const [month, setMonth] = useState("January");
+  const [year, setYear] = useState(new Date().getFullYear());
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -20,26 +23,32 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const slotData = {
+      name,
+      projectName,
+      startTime,
+      endTime,
+      description,
+      day,
+      dayOfMonth,
+      month,
+      year,
+      userId: userInfo.id,
+    };
+
+    console.log("Submitting time slot:", slotData); // Check the payload
+
     const response = await fetch("http://localhost:8081/meeting/slots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        projectName,
-        startTime,
-        endTime,
-        description,
-        day,
-        userId: userInfo.id,
-      }),
+      body: JSON.stringify(slotData),
     });
 
     if (response.ok) {
       const data = await response.json();
       setMessage(
-        `Time Slot created for ${data.name} (${data.projectName}) from ${startTime} to ${endTime}` // Use backticks here
+        `Time Slot created for ${data.name} (${data.projectName}) on ${day}, ${month} ${dayOfMonth}, ${year} from ${startTime} to ${endTime}`
       );
-      ///onCreateSlot(data); // Call the function passed down from HomePage
       setShowModal(true);
     } else {
       setMessage("Failed to create time slot");
@@ -64,6 +73,26 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
     "4:00 PM",
     "5:00 PM",
   ];
+
+  const monthOptions = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const yearOptions = Array.from(
+    { length: 5 },
+    (_, index) => new Date().getFullYear() + index
+  );
 
   return (
     <div className="create-timeslot-container">
@@ -113,6 +142,46 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
             <option value="Wednesday">Wednesday</option>
             <option value="Thursday">Thursday</option>
             <option value="Friday">Friday</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Day of the Month:</label>
+          <input
+            type="number"
+            value={dayOfMonth}
+            onChange={(e) => setDayOfMonth(Number(e.target.value))}
+            min="1"
+            max="31"
+            className="form-control"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Month:</label>
+          <select
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="form-control"
+          >
+            {monthOptions.map((monthOption) => (
+              <option key={monthOption} value={monthOption}>
+                {monthOption}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Year:</label>
+          <select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className="form-control"
+          >
+            {yearOptions.map((yearOption) => (
+              <option key={yearOption} value={yearOption}>
+                {yearOption}
+              </option>
+            ))}
           </select>
         </div>
         <div className="form-group">
