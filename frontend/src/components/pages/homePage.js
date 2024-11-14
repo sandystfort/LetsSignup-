@@ -30,7 +30,6 @@ const HomePage = () => {
           );
           setPersonalSlots(userSlots);
           console.log("Fetched slots:", data);
-          console.log("User slots:", userSlots);
         })
         .catch((error) => console.error("Error fetching slots:", error));
     };
@@ -73,10 +72,7 @@ const HomePage = () => {
       {user.isAdmin && <p className="admin-status">You are an admin.</p>}
 
       <Tabs id="home-page-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
-        <Tab
-          eventKey="personalSlots"
-          title={<span className="tab-title">My Time Slots</span>}
-        >
+        <Tab eventKey="personalSlots" title="My Time Slots">
           <div className="tab-content">
             <h4 className="section-title">Your Time Slots</h4>
             <Row>
@@ -90,6 +86,12 @@ const HomePage = () => {
                       <Card.Body>
                         <Card.Title>{slot.name}</Card.Title>
                         <Card.Text>
+                          <strong>Date:</strong>{" "}
+                          {slot.day ? `${slot.day}, ` : ""}
+                          {slot.month ? `${slot.month} ` : ""}
+                          {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}
+                          {slot.year ? slot.year : ""}
+                          <br />
                           <strong>Time:</strong> {slot.startHour}{" "}
                           {slot.startMeridiem} - {slot.endHour}{" "}
                           {slot.endMeridiem}
@@ -121,10 +123,7 @@ const HomePage = () => {
           </div>
         </Tab>
 
-        <Tab
-          eventKey="allSlots"
-          title={<span className="tab-title">View All Meetings</span>}
-        >
+        <Tab eventKey="allSlots" title="View All Meetings">
           <div className="tab-content">
             <h4 className="section-title">All Registered Time Slots</h4>
             <Row>
@@ -137,6 +136,11 @@ const HomePage = () => {
                     <Card.Body>
                       <Card.Title>{slot.name}</Card.Title>
                       <Card.Text>
+                        <strong>Date:</strong> {slot.day ? `${slot.day}, ` : ""}
+                        {slot.month ? `${slot.month} ` : ""}
+                        {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}
+                        {slot.year ? slot.year : ""}
+                        <br />
                         <strong>Time:</strong> {slot.startHour}{" "}
                         {slot.startMeridiem} - {slot.endHour} {slot.endMeridiem}
                         <br />

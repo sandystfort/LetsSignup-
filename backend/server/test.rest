@@ -63,6 +63,9 @@ Content-Type: application/json
     "startTime": "1:00 PM",
     "endTime": "2:00 PM",
     "day": "Tuesday",
+    "dayOfMonth": 15,
+    "month": "August",
+    "year": 2024,
     "userId": "Test234"  
 }
 

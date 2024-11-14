@@ -88,6 +88,12 @@ const DetailPage = () => {
                 <strong>Description:</strong> {slot.description}
               </Card.Text>
               <Card.Text>
+                <strong>Date:</strong> {slot.day ? `${slot.day}, ` : ""}
+                {slot.month ? `${slot.month} ` : ""}
+                {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}
+                {slot.year ? slot.year : ""}
+              </Card.Text>
+              <Card.Text>
                 <strong>Time:</strong> {slot.startHour} {slot.startMeridiem} -{" "}
                 {slot.endHour} {slot.endMeridiem}
               </Card.Text>
