@@ -81,6 +81,9 @@ const PrivateUserProfile = () => {
               <p>
                 <strong>Password:</strong> {user.password ? "****" : "(hashed)"}
               </p>
+              {user.isAdmin && (
+                <p className="admin-status">You are an admin!</p>
+              )}
 
               {/* Edit Personal Info Form */}
               {editMode ? (

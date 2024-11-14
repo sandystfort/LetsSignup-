@@ -22,20 +22,12 @@ const HomePage = () => {
       if (!user || !user.id) return;
 
       fetch("http://localhost:8081/meeting/slots")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
+        .then((response) => response.json())
         .then((data) => {
           setSlots(data);
-
-          // Filter to get personal slots based on user ID
           const userSlots = data.filter(
             (slot) => slot.createdBy && slot.createdBy.toString() === user.id
           );
-
           setPersonalSlots(userSlots);
           console.log("Fetched slots:", data);
           console.log("User slots:", userSlots);
@@ -48,20 +40,16 @@ const HomePage = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this slot?")) {
-      console.log("Attempting to delete slot with ID:", id);
       fetch(`http://localhost:8081/meeting/slots/${id}`, { method: "DELETE" })
         .then((response) => {
           if (response.ok) {
-            console.log("Slot deleted successfully");
-            // Update state to remove the deleted slot from both personal and all slots
             const updatedSlots = slots.filter((slot) => slot._id !== id);
             const updatedPersonalSlots = personalSlots.filter(
               (slot) => slot._id !== id
             );
             setSlots(updatedSlots);
             setPersonalSlots(updatedPersonalSlots);
-            console.log("Updated slots:", updatedSlots);
-            console.log("Updated personal slots:", updatedPersonalSlots);
+            console.log("Slot deleted successfully");
           } else {
             console.error("Failed to delete slot");
           }
@@ -82,6 +70,7 @@ const HomePage = () => {
     <div className="home-page-container">
       <h3 className="welcome-message">Welcome, {user.username}</h3>
       <p>Your registered email is {user.email}</p>
+      {user.isAdmin && <p className="admin-status">You are an admin.</p>}
 
       <Tabs id="home-page-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
         <Tab
@@ -160,16 +149,16 @@ const HomePage = () => {
                         >
                           View Details
                         </Button>
-                        {/* Show delete button only for user's own slots */}
-                        {slot.createdBy &&
-                          slot.createdBy.toString() === user.id && (
-                            <Button
-                              variant="danger"
-                              onClick={() => handleDelete(slot._id)}
-                            >
-                              Delete
-                            </Button>
-                          )}
+                        {(slot.createdBy &&
+                          slot.createdBy.toString() === user.id) ||
+                        user.isAdmin ? (
+                          <Button
+                            variant="danger"
+                            onClick={() => handleDelete(slot._id)}
+                          >
+                            Delete
+                          </Button>
+                        ) : null}
                       </div>
                     </Card.Body>
                   </Card>
