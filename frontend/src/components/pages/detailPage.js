@@ -73,6 +73,9 @@ const DetailPage = () => {
             <Card.Body style={{ backgroundColor: "#f0f8ff" }}>
               <Card.Title>
                 <h3 style={{ color: "#0056b3" }}>{slot.name}</h3>
+              </Card.Title>
+              <Card.Text>
+                <strong>Project Name:</strong>{" "}
                 <Badge
                   bg="warning"
                   className="ms-2"
@@ -80,7 +83,7 @@ const DetailPage = () => {
                 >
                   {slot.projectName}
                 </Badge>
-              </Card.Title>
+              </Card.Text>
               <Card.Text>
                 <strong>Description:</strong> {slot.description}
               </Card.Text>
