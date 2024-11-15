@@ -95,7 +95,12 @@ const HomePage = () => {
                         <Card.Title>{slot.name}</Card.Title>
                         <Card.Text>
                           <strong>Date:</strong>{" "}
-                          {`${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`}
+                          {slot.day &&
+                          slot.month &&
+                          slot.dayOfMonth &&
+                          slot.year
+                            ? `${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`
+                            : "Date not specified"}
                           <br />
                           <strong>Time:</strong>{" "}
                           {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
@@ -141,7 +146,9 @@ const HomePage = () => {
                       <Card.Title>{slot.name}</Card.Title>
                       <Card.Text>
                         <strong>Date:</strong>{" "}
-                        {`${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`}
+                        {slot.day && slot.month && slot.dayOfMonth && slot.year
+                          ? `${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`
+                          : "Date not specified"}
                         <br />
                         <strong>Time:</strong>{" "}
                         {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
