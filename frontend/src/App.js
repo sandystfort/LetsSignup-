@@ -14,6 +14,7 @@ import getUserInfo from "./utilities/decodeJwt";
 import CreateTimeSlot from "./components/pages/createTimeslotPage";
 import ListTimeSlotsPage from "./components/pages/listTimeSlotsPage";
 import DetailPage from "./components/pages/detailPage"; // Ensure DetailPage is imported
+import EditTimeSlotPage from "./components/pages/editTimeSlotPage";
 
 export const UserContext = createContext();
 
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/ListTimeSlots" element={<ListTimeSlotsPage />} />
           {/* Add the DetailPage route with dynamic :id */}
           <Route path="/details/:id" element={<DetailPage />} />
+          <Route path="/edit/:id" element={<EditTimeSlotPage />} />
         </Routes>
       </UserContext.Provider>
     </>

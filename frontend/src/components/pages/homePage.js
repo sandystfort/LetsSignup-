@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Tabs, Button, Card, Row, Col, Container } from "react-bootstrap";
+import {
+  Tab,
+  Tabs,
+  Button,
+  Card,
+  Row,
+  Col,
+  Container,
+  Dropdown,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import getUserInfo from "../../utilities/decodeJwt";
 import "./homePage.css";
@@ -65,6 +74,10 @@ const HomePage = () => {
     }
   };
 
+  const handleEdit = (id) => {
+    navigate(`/edit/${id}`);
+  };
+
   if (!user || !user.id) {
     return (
       <div>
@@ -94,7 +107,27 @@ const HomePage = () => {
                       style={{ borderRadius: "10px" }}
                     >
                       <Card.Body>
-                        <Card.Title>{slot.name}</Card.Title>
+                        <div className="d-flex justify-content-between">
+                          <Card.Title>{slot.name}</Card.Title>
+                          {(slot.createdBy && slot.createdBy._id === user.id) ||
+                          user.isAdmin ? (
+                            <Dropdown align="end">
+                              <Dropdown.Toggle
+                                variant="light"
+                                id="dropdown-basic"
+                              >
+                                &#x22EE;
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item
+                                  onClick={() => handleEdit(slot._id)}
+                                >
+                                  Edit
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          ) : null}
+                        </div>
                         <Card.Text>
                           <strong>Date:</strong>{" "}
                           {slot.day &&
@@ -148,7 +181,27 @@ const HomePage = () => {
                     style={{ borderRadius: "10px" }}
                   >
                     <Card.Body>
-                      <Card.Title>{slot.name}</Card.Title>
+                      <div className="d-flex justify-content-between">
+                        <Card.Title>{slot.name}</Card.Title>
+                        {(slot.createdBy && slot.createdBy._id === user.id) ||
+                        user.isAdmin ? (
+                          <Dropdown align="end">
+                            <Dropdown.Toggle
+                              variant="light"
+                              id="dropdown-basic"
+                            >
+                              &#x22EE;
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              <Dropdown.Item
+                                onClick={() => handleEdit(slot._id)}
+                              >
+                                Edit
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        ) : null}
+                      </div>
                       <Card.Text>
                         <strong>Date:</strong>{" "}
                         {slot.day && slot.month && slot.dayOfMonth && slot.year
