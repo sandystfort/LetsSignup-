@@ -31,10 +31,10 @@ const LandingPage = () => {
           </Card.Text>
           <div className="d-flex justify-content-around mt-4">
             <Button variant="custom-orange" size="lg" href="/signup">
-              Sign Up ✨
+              Sign Up
             </Button>
             <Button variant="outline-custom-blue" size="lg" href="/login">
-              Login 🔑
+              Login
             </Button>
           </div>
         </Card.Body>
