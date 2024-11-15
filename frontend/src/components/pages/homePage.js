@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Tabs, Button, Card, Row, Col } from "react-bootstrap";
+import { Tab, Tabs, Button, Card, Row, Col, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import getUserInfo from "../../utilities/decodeJwt";
 import "./homePage.css";
@@ -75,9 +75,11 @@ const HomePage = () => {
 
   return (
     <div className="home-page-container">
-      <h3 className="welcome-message">Welcome, {user.username}</h3>
-      <p>Your registered email is {user.email}</p>
-      {user.isAdmin && <p className="admin-status">You are an admin.</p>}
+      <Container className="welcome-container">
+        <h3 className="welcome-message">Welcome, {user.username}</h3>
+        <p>Your registered email is {user.email}</p>
+        {user.isAdmin && <p className="admin-status">You are an admin.</p>}
+      </Container>
 
       <Tabs id="home-page-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
         <Tab eventKey="personalSlots" title="My Time Slots">

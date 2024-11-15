@@ -2,66 +2,31 @@
   padding: 20px;
 }
 
+.welcome-container {
+  background-color: #ffffff; /* White background */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .welcome-message {
   font-size: 24px;
   font-weight: bold;
-  color: #ff6b6b;
+  color: #ff8c00; /* Lighter orange */
   margin-bottom: 10px;
 }
 
-.tab-title {
-  font-size: 18px;
+.admin-status {
+  color: #ff8c00; /* Lighter orange */
 }
 
 .section-title {
   font-size: 22px;
-  color: #f56a79;
+  color: #ff8c00; /* Lighter orange */
   margin-bottom: 10px;
 }
 
 .tab-content {
   padding: 20px;
-}
-
-.fun-box {
-  background-color: #ffe6e6;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.fun-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.fun-fact {
-  background-color: #ffcccb;
-}
-
-.capstone-advisors {
-  background-color: #ffdd99;
-}
-
-.it-vs-cs {
-  background-color: #c1e1c1;
-}
-
-.question-box {
-  background-color: #a1c4fd;
-}
-
-.comment-box {
-  background-color: #f7c3d1;
-}
-
-ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-ul li {
-  margin-bottom: 10px;
 }
