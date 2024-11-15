@@ -56,20 +56,38 @@ router.post("/slots", async (req, res) => {
       });
     }
 
+    // Check for time conflicts on the same day, month, and year
     const existingSlot = await timeslotModel.findOne({
-      day,
+      dayOfMonth,
+      month,
+      year,
       $or: [
-        { startHour: { $lt: endHour }, endHour: { $gt: startHour } },
-        { startHour: { $gte: startHour }, endHour: { $lte: endHour } },
+        {
+          $and: [
+            { startHour: { $lt: endHour } },
+            { endHour: { $gt: startHour } },
+            { startMeridiem: startMeridiem },
+            { endMeridiem: endMeridiem },
+          ],
+        },
+        {
+          $and: [
+            { startHour: { $gte: startHour } },
+            { endHour: { $lte: endHour } },
+            { startMeridiem: startMeridiem },
+            { endMeridiem: endMeridiem },
+          ],
+        },
       ],
     });
 
     if (existingSlot) {
       return res.status(400).send({
-        message: `Time slot conflict: ${existingSlot.startHour} ${existingSlot.startMeridiem} - ${existingSlot.endHour} ${existingSlot.endMeridiem} is already booked`,
+        message: `Time slot conflict: ${existingSlot.startHour} ${existingSlot.startMeridiem} - ${existingSlot.endHour} ${existingSlot.endMeridiem} on ${existingSlot.dayOfMonth} ${existingSlot.month} ${existingSlot.year} is already booked`,
       });
     }
 
+    // Create the new timeslot if no conflict exists
     const newTimeslot = new timeslotModel({
       name,
       projectName,

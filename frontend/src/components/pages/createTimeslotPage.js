@@ -159,7 +159,7 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
           <input
             type="number"
             value={dayOfMonth}
-            onChange={(e) => setDayOfMonth(Number(e.target.value))}
+            onChange={(e) => setDayOfMonth(e.target.value)}
             min="1"
             max="31"
             className="form-control"
