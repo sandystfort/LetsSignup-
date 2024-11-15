@@ -18,20 +18,28 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSlots = () => {
-      if (!user || !user.id) return;
+    const fetchSlots = async () => {
+      if (!user || !user.id) {
+        console.log("User ID not available, skipping fetch.");
+        return;
+      }
 
-      fetch("http://localhost:8081/meeting/slots")
-        .then((response) => response.json())
-        .then((data) => {
-          setSlots(data);
-          const userSlots = data.filter(
-            (slot) => slot.createdBy && slot.createdBy.toString() === user.id
-          );
-          setPersonalSlots(userSlots);
-          console.log("Fetched slots:", data);
-        })
-        .catch((error) => console.error("Error fetching slots:", error));
+      console.log("Fetching slots from backend...");
+      try {
+        const response = await fetch("http://localhost:8081/meeting/slots");
+        if (!response.ok) throw new Error("Failed to fetch slots");
+
+        const data = await response.json();
+        setSlots(data);
+
+        const userSlots = data.filter(
+          (slot) => slot.createdBy && slot.createdBy._id === user.id
+        );
+        setPersonalSlots(userSlots);
+        console.log("Filtered user slots:", userSlots);
+      } catch (error) {
+        console.error("Error fetching slots:", error);
+      }
     };
 
     fetchSlots();
@@ -87,14 +95,10 @@ const HomePage = () => {
                         <Card.Title>{slot.name}</Card.Title>
                         <Card.Text>
                           <strong>Date:</strong>{" "}
-                          {slot.day ? `${slot.day}, ` : ""}
-                          {slot.month ? `${slot.month} ` : ""}
-                          {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}
-                          {slot.year ? slot.year : ""}
+                          {`${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`}
                           <br />
-                          <strong>Time:</strong> {slot.startHour}{" "}
-                          {slot.startMeridiem} - {slot.endHour}{" "}
-                          {slot.endMeridiem}
+                          <strong>Time:</strong>{" "}
+                          {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
                           <br />
                           <strong>Project:</strong> {slot.projectName}
                         </Card.Text>
@@ -136,13 +140,11 @@ const HomePage = () => {
                     <Card.Body>
                       <Card.Title>{slot.name}</Card.Title>
                       <Card.Text>
-                        <strong>Date:</strong> {slot.day ? `${slot.day}, ` : ""}
-                        {slot.month ? `${slot.month} ` : ""}
-                        {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}
-                        {slot.year ? slot.year : ""}
+                        <strong>Date:</strong>{" "}
+                        {`${slot.day}, ${slot.month} ${slot.dayOfMonth}, ${slot.year}`}
                         <br />
-                        <strong>Time:</strong> {slot.startHour}{" "}
-                        {slot.startMeridiem} - {slot.endHour} {slot.endMeridiem}
+                        <strong>Time:</strong>{" "}
+                        {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
                         <br />
                         <strong>Project:</strong> {slot.projectName}
                       </Card.Text>
@@ -153,8 +155,7 @@ const HomePage = () => {
                         >
                           View Details
                         </Button>
-                        {(slot.createdBy &&
-                          slot.createdBy.toString() === user.id) ||
+                        {(slot.createdBy && slot.createdBy._id === user.id) ||
                         user.isAdmin ? (
                           <Button
                             variant="danger"

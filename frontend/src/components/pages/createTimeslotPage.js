@@ -38,20 +38,30 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
 
     console.log("Submitting time slot:", slotData); // Check the payload
 
-    const response = await fetch("http://localhost:8081/meeting/slots", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(slotData),
-    });
+    try {
+      const response = await fetch("http://localhost:8081/meeting/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(slotData),
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error creating slot:", errorData);
+        setMessage(
+          `Failed to create time slot: ${errorData.message || "Unknown error"}`
+        );
+        return;
+      }
+
       const data = await response.json();
       setMessage(
         `Time Slot created for ${data.name} (${data.projectName}) on ${day}, ${month} ${dayOfMonth}, ${year} from ${startTime} to ${endTime}`
       );
       setShowModal(true);
-    } else {
-      setMessage("Failed to create time slot");
+    } catch (error) {
+      console.error("Error during submission:", error);
+      setMessage("Failed to create time slot: Network or server error");
     }
   };
 
@@ -154,6 +164,7 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
             max="31"
             className="form-control"
             required
+            placeholder="Enter or select day of the month"
           />
         </div>
         <div className="form-group">

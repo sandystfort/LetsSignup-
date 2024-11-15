@@ -17,8 +17,18 @@ const convertTo24Hour = (hour, meridiem) => {
 router.post("/slots", async (req, res) => {
   console.log("Received timeslot creation request:", req.body);
 
-  const { name, projectName, startTime, endTime, description, day, userId } =
-    req.body;
+  const {
+    name,
+    projectName,
+    startTime,
+    endTime,
+    description,
+    day,
+    dayOfMonth,
+    month,
+    year,
+    userId,
+  } = req.body;
 
   if (!userId) {
     return res.status(400).send({ message: "User ID is required." });
@@ -69,23 +79,28 @@ router.post("/slots", async (req, res) => {
       startMeridiem,
       endMeridiem,
       day,
+      dayOfMonth,
+      month,
+      year,
       createdBy: userId,
     });
 
     const savedTimeslot = await newTimeslot.save();
     console.log("Saved Timeslot:", savedTimeslot);
 
-    res.status(201).json(savedTimeslot); // Return the created slot in JSON format
+    res.status(201).json(savedTimeslot);
   } catch (err) {
     console.error("Error during timeslot creation:", err);
     res.status(500).send({ message: "Internal server error" });
   }
 });
 
-// Fetch all timeslots
+// Fetch all timeslots and populate `createdBy` field with user info
 router.get("/slots", async (req, res) => {
   try {
-    const slots = await timeslotModel.find();
+    const slots = await timeslotModel
+      .find()
+      .populate("createdBy", "username email");
     res.status(200).json(slots);
   } catch (err) {
     console.error("Error fetching timeslots:", err);
@@ -97,7 +112,9 @@ router.get("/slots", async (req, res) => {
 router.get("/slots/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const slot = await timeslotModel.findById(id).populate("createdBy");
+    const slot = await timeslotModel
+      .findById(id)
+      .populate("createdBy", "username email");
     if (!slot) {
       return res.status(404).send({ message: "Slot not found" });
     }
@@ -114,12 +131,12 @@ router.delete("/slots/:id", async (req, res) => {
   try {
     const deletedSlot = await timeslotModel.findByIdAndDelete(id);
     if (!deletedSlot) {
-      return res.status(404).send({ message: "Slot not found" });
+      return res.status(404).json({ message: "Slot not found" });
     }
-    res.status(200).send({ message: "Slot deleted successfully" });
+    res.status(200).json({ message: "Slot deleted successfully" });
   } catch (err) {
     console.error("Error deleting slot:", err);
-    res.status(500).send({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
