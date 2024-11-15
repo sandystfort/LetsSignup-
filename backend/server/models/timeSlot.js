@@ -38,6 +38,7 @@ const timeslotSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  capstoneSupervisor: { type: String, required: true }, // Added field
 });
 
 const Timeslot = mongoose.model("Timeslot", timeslotSchema);

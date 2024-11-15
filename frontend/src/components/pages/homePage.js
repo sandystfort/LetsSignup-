@@ -108,6 +108,9 @@ const HomePage = () => {
                           {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
                           <br />
                           <strong>Project:</strong> {slot.projectName}
+                          <br />
+                          <strong>Capstone Supervisor:</strong>{" "}
+                          {slot.capstoneSupervisor || "Not specified"}
                         </Card.Text>
                         <div className="d-flex justify-content-between">
                           <Button
@@ -156,6 +159,9 @@ const HomePage = () => {
                         {`${slot.startHour} ${slot.startMeridiem} - ${slot.endHour} ${slot.endMeridiem}`}
                         <br />
                         <strong>Project:</strong> {slot.projectName}
+                        <br />
+                        <strong>Capstone Supervisor:</strong>{" "}
+                        {slot.capstoneSupervisor || "Not specified"}
                       </Card.Text>
                       <div className="d-flex justify-content-between">
                         <Button

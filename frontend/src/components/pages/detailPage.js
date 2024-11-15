@@ -88,6 +88,10 @@ const DetailPage = () => {
                 <strong>Description:</strong> {slot.description}
               </Card.Text>
               <Card.Text>
+                <strong>Capstone Supervisor:</strong>{" "}
+                {slot.capstoneSupervisor || "Not specified"}
+              </Card.Text>
+              <Card.Text>
                 <strong>Date:</strong> {slot.day ? `${slot.day}, ` : ""}
                 {slot.month ? `${slot.month} ` : ""}
                 {slot.dayOfMonth ? `${slot.dayOfMonth}, ` : ""}

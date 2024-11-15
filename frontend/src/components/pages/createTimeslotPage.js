@@ -10,6 +10,7 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
   const [startTime, setStartTime] = useState("7:00 AM");
   const [endTime, setEndTime] = useState("5:00 PM");
   const [description, setDescription] = useState("");
+  const [capstoneSupervisor, setCapstoneSupervisor] = useState(""); // New state
   const [day, setDay] = useState("Monday");
   const [dayOfMonth, setDayOfMonth] = useState(1);
   const [month, setMonth] = useState("January");
@@ -29,6 +30,7 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
       startTime,
       endTime,
       description,
+      capstoneSupervisor, // Include the new field
       day,
       dayOfMonth,
       month,
@@ -138,6 +140,17 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
             required
             className="form-control"
             placeholder="Enter project description"
+          />
+        </div>
+        <div className="form-group">
+          <label>Capstone Supervisor:</label> {/* New input field */}
+          <input
+            type="text"
+            value={capstoneSupervisor}
+            onChange={(e) => setCapstoneSupervisor(e.target.value)}
+            required
+            className="form-control"
+            placeholder="Enter Capstone Supervisor"
           />
         </div>
         <div className="form-group">

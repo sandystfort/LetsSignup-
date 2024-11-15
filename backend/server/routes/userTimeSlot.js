@@ -28,6 +28,7 @@ router.post("/slots", async (req, res) => {
     month,
     year,
     userId,
+    capstoneSupervisor, // New field
   } = req.body;
 
   if (!userId) {
@@ -101,6 +102,7 @@ router.post("/slots", async (req, res) => {
       month,
       year,
       createdBy: userId,
+      capstoneSupervisor, // Add new field
     });
 
     const savedTimeslot = await newTimeslot.save();
