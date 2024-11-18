@@ -18,12 +18,15 @@ const EditTimeSlotPage = () => {
         if (!response.ok) throw new Error("Failed to load slot details");
 
         const data = await response.json();
+        // Ensure startTime and endTime are properly initialized
+        data.startTime = data.startTime || "12:00 AM";
+        data.endTime = data.endTime || "12:00 AM";
         setSlot(data);
       } catch (error) {
         console.error("Error fetching slot details:", error);
         setMessage("Failed to load slot details.");
       } finally {
-        setLoading(false); // Ensure loading is set to false in all cases
+        setLoading(false);
       }
     };
 
@@ -41,13 +44,16 @@ const EditTimeSlotPage = () => {
           body: JSON.stringify(slot),
         }
       );
-      if (!response.ok) throw new Error("Failed to update timeslot");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update timeslot");
+      }
 
       setMessage("Timeslot updated successfully!");
-      navigate("/"); // Redirect to home or other desired page
+      navigate("/");
     } catch (error) {
       console.error("Error updating timeslot:", error);
-      setMessage("Failed to update timeslot.");
+      setMessage(error.message);
     }
   };
 
@@ -85,7 +91,7 @@ const EditTimeSlotPage = () => {
           <Form.Control
             type="text"
             name="name"
-            value={slot.name}
+            value={slot.name || ""}
             onChange={handleChange}
             required
           />
@@ -96,7 +102,7 @@ const EditTimeSlotPage = () => {
           <Form.Control
             type="text"
             name="projectName"
-            value={slot.projectName}
+            value={slot.projectName || ""}
             onChange={handleChange}
             required
           />
@@ -107,10 +113,78 @@ const EditTimeSlotPage = () => {
           <Form.Control
             as="textarea"
             name="description"
-            value={slot.description}
+            value={slot.description || ""}
             onChange={handleChange}
             required
           />
+        </Form.Group>
+
+        {/* Start Time */}
+        <Form.Group controlId="startTime">
+          <Form.Label>Start Time</Form.Label>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <Form.Control
+              type="text"
+              placeholder="HH:MM"
+              name="startTime"
+              value={slot.startTime.split(" ")[0] || ""}
+              onChange={(e) =>
+                setSlot((prevSlot) => ({
+                  ...prevSlot,
+                  startTime: `${e.target.value} ${slot.startMeridiem || "AM"}`,
+                }))
+              }
+              required
+            />
+            <Form.Select
+              value={slot.startTime.split(" ")[1] || "AM"}
+              onChange={(e) =>
+                setSlot((prevSlot) => ({
+                  ...prevSlot,
+                  startTime: `${slot.startTime.split(" ")[0] || ""} ${
+                    e.target.value
+                  }`,
+                }))
+              }
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </Form.Select>
+          </div>
+        </Form.Group>
+
+        {/* End Time */}
+        <Form.Group controlId="endTime">
+          <Form.Label>End Time</Form.Label>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <Form.Control
+              type="text"
+              placeholder="HH:MM"
+              name="endTime"
+              value={slot.endTime.split(" ")[0] || ""}
+              onChange={(e) =>
+                setSlot((prevSlot) => ({
+                  ...prevSlot,
+                  endTime: `${e.target.value} ${slot.endMeridiem || "AM"}`,
+                }))
+              }
+              required
+            />
+            <Form.Select
+              value={slot.endTime.split(" ")[1] || "AM"}
+              onChange={(e) =>
+                setSlot((prevSlot) => ({
+                  ...prevSlot,
+                  endTime: `${slot.endTime.split(" ")[0] || ""} ${
+                    e.target.value
+                  }`,
+                }))
+              }
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </Form.Select>
+          </div>
         </Form.Group>
 
         <Form.Group controlId="capstoneSupervisor">
@@ -118,7 +192,7 @@ const EditTimeSlotPage = () => {
           <Form.Control
             type="text"
             name="capstoneSupervisor"
-            value={slot.capstoneSupervisor}
+            value={slot.capstoneSupervisor || ""}
             onChange={handleChange}
             required
           />

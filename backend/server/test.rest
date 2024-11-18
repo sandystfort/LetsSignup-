@@ -69,6 +69,19 @@ Content-Type: application/json
      "userId": "6734b7dd939cee245e21e60a" ,
       "capstoneSupervisor": "Dr. John Doe" 
 }
+###
+PUT http://localhost:8081/meeting/slots/6734b7dd939cee245e21e60a
+Content-Type: application/json
+
+{
+    "name": "Updated Testing",
+    "projectName": "Updated Test Project",
+    "description": "Updated description for the project",
+    "startTime": "2:00 PM",
+    "endTime": "3:00 PM",
+    "capstoneSupervisor": "Updated Dr. John Doe"
+}
+
 
 ###
 GET http://localhost:8081/meeting/slots
