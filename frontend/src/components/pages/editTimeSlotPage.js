@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Spinner } from "react-bootstrap";
+import { Form, Button, Container, Spinner, Toast } from "react-bootstrap";
 
 const EditTimeSlotPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [slot, setSlot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+
+  const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString()); // 1 to 12
+  const minutes = ["00", "15", "30", "45"]; // Minute options
+  const periods = ["AM", "PM"]; // AM/PM options
 
   useEffect(() => {
     const fetchSlotDetails = async () => {
@@ -18,7 +23,6 @@ const EditTimeSlotPage = () => {
         if (!response.ok) throw new Error("Failed to load slot details");
 
         const data = await response.json();
-        // Ensure startTime and endTime are properly initialized
         data.startTime = data.startTime || "12:00 AM";
         data.endTime = data.endTime || "12:00 AM";
         setSlot(data);
@@ -50,19 +54,31 @@ const EditTimeSlotPage = () => {
       }
 
       setMessage("Timeslot updated successfully!");
-      navigate("/");
+      setShowToast(true);
+
+      // Redirect to the homepage after a delay
+      setTimeout(() => {
+        navigate("/home"); // Redirects to "/home" instead of login
+      }, 3000); // 3-second delay
     } catch (error) {
       console.error("Error updating timeslot:", error);
       setMessage(error.message);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setSlot((prevSlot) => ({
-      ...prevSlot,
-      [name]: value,
-    }));
+  const handleTimeChange = (timeType, field, value) => {
+    setSlot((prevSlot) => {
+      const currentTime = prevSlot[timeType].split(" ");
+      const timeParts = currentTime[0].split(":");
+
+      if (field === "hour") timeParts[0] = value;
+      if (field === "minute") timeParts[1] = value;
+
+      const newTime = `${timeParts.join(":")} ${
+        field === "period" ? value : currentTime[1]
+      }`;
+      return { ...prevSlot, [timeType]: newTime };
+    });
   };
 
   if (loading) {
@@ -82,8 +98,13 @@ const EditTimeSlotPage = () => {
     );
   }
 
+  const [startHour, startMinute] = slot.startTime.split(" ")[0].split(":");
+  const startPeriod = slot.startTime.split(" ")[1];
+  const [endHour, endMinute] = slot.endTime.split(" ")[0].split(":");
+  const endPeriod = slot.endTime.split(" ")[1];
+
   return (
-    <Container className="mt-5">
+    <Container className="mt-5 position-relative">
       <h2>Edit Timeslot</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="name">
@@ -92,7 +113,7 @@ const EditTimeSlotPage = () => {
             type="text"
             name="name"
             value={slot.name || ""}
-            onChange={handleChange}
+            onChange={(e) => setSlot({ ...slot, name: e.target.value })}
             required
           />
         </Form.Group>
@@ -103,7 +124,7 @@ const EditTimeSlotPage = () => {
             type="text"
             name="projectName"
             value={slot.projectName || ""}
-            onChange={handleChange}
+            onChange={(e) => setSlot({ ...slot, projectName: e.target.value })}
             required
           />
         </Form.Group>
@@ -114,75 +135,91 @@ const EditTimeSlotPage = () => {
             as="textarea"
             name="description"
             value={slot.description || ""}
-            onChange={handleChange}
+            onChange={(e) => setSlot({ ...slot, description: e.target.value })}
             required
           />
         </Form.Group>
 
-        {/* Start Time */}
         <Form.Group controlId="startTime">
           <Form.Label>Start Time</Form.Label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Form.Control
-              type="text"
-              placeholder="HH:MM"
-              name="startTime"
-              value={slot.startTime.split(" ")[0] || ""}
-              onChange={(e) =>
-                setSlot((prevSlot) => ({
-                  ...prevSlot,
-                  startTime: `${e.target.value} ${slot.startMeridiem || "AM"}`,
-                }))
-              }
-              required
-            />
             <Form.Select
-              value={slot.startTime.split(" ")[1] || "AM"}
+              value={startHour}
               onChange={(e) =>
-                setSlot((prevSlot) => ({
-                  ...prevSlot,
-                  startTime: `${slot.startTime.split(" ")[0] || ""} ${
-                    e.target.value
-                  }`,
-                }))
+                handleTimeChange("startTime", "hour", e.target.value)
               }
             >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
+              {hours.map((hour) => (
+                <option key={hour} value={hour}>
+                  {hour}
+                </option>
+              ))}
+            </Form.Select>
+            <Form.Select
+              value={startMinute}
+              onChange={(e) =>
+                handleTimeChange("startTime", "minute", e.target.value)
+              }
+            >
+              {minutes.map((minute) => (
+                <option key={minute} value={minute}>
+                  {minute}
+                </option>
+              ))}
+            </Form.Select>
+            <Form.Select
+              value={startPeriod}
+              onChange={(e) =>
+                handleTimeChange("startTime", "period", e.target.value)
+              }
+            >
+              {periods.map((period) => (
+                <option key={period} value={period}>
+                  {period}
+                </option>
+              ))}
             </Form.Select>
           </div>
         </Form.Group>
 
-        {/* End Time */}
         <Form.Group controlId="endTime">
           <Form.Label>End Time</Form.Label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Form.Control
-              type="text"
-              placeholder="HH:MM"
-              name="endTime"
-              value={slot.endTime.split(" ")[0] || ""}
-              onChange={(e) =>
-                setSlot((prevSlot) => ({
-                  ...prevSlot,
-                  endTime: `${e.target.value} ${slot.endMeridiem || "AM"}`,
-                }))
-              }
-              required
-            />
             <Form.Select
-              value={slot.endTime.split(" ")[1] || "AM"}
+              value={endHour}
               onChange={(e) =>
-                setSlot((prevSlot) => ({
-                  ...prevSlot,
-                  endTime: `${slot.endTime.split(" ")[0] || ""} ${
-                    e.target.value
-                  }`,
-                }))
+                handleTimeChange("endTime", "hour", e.target.value)
               }
             >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
+              {hours.map((hour) => (
+                <option key={hour} value={hour}>
+                  {hour}
+                </option>
+              ))}
+            </Form.Select>
+            <Form.Select
+              value={endMinute}
+              onChange={(e) =>
+                handleTimeChange("endTime", "minute", e.target.value)
+              }
+            >
+              {minutes.map((minute) => (
+                <option key={minute} value={minute}>
+                  {minute}
+                </option>
+              ))}
+            </Form.Select>
+            <Form.Select
+              value={endPeriod}
+              onChange={(e) =>
+                handleTimeChange("endTime", "period", e.target.value)
+              }
+            >
+              {periods.map((period) => (
+                <option key={period} value={period}>
+                  {period}
+                </option>
+              ))}
             </Form.Select>
           </div>
         </Form.Group>
@@ -193,7 +230,9 @@ const EditTimeSlotPage = () => {
             type="text"
             name="capstoneSupervisor"
             value={slot.capstoneSupervisor || ""}
-            onChange={handleChange}
+            onChange={(e) =>
+              setSlot({ ...slot, capstoneSupervisor: e.target.value })
+            }
             required
           />
         </Form.Group>
@@ -201,8 +240,45 @@ const EditTimeSlotPage = () => {
         <Button variant="primary" type="submit" className="mt-3">
           Save Changes
         </Button>
-        {message && <p className="mt-3 text-success">{message}</p>}
       </Form>
+
+      {/* Toast Notification */}
+      <div
+        style={{
+          position: "fixed",
+          top: "40%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1050,
+        }}
+      >
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000} // Matches redirect delay
+          autohide
+        >
+          <Toast.Header>
+            <strong className="me-auto">Update Success</strong>
+          </Toast.Header>
+          <Toast.Body>
+            <div>
+              <p>
+                <strong>Updated Name:</strong> {slot.name}
+              </p>
+              <p>
+                <strong>Updated Time:</strong> {slot.startTime} - {slot.endTime}
+              </p>
+              <p>
+                <strong>Updated Project Title:</strong> {slot.projectName}
+              </p>
+              <p>
+                <strong>Updated Description:</strong> {slot.description}
+              </p>
+            </div>
+          </Toast.Body>
+        </Toast>
+      </div>
     </Container>
   );
 };
