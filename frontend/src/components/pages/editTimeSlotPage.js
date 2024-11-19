@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Spinner, Toast } from "react-bootstrap";
+import "./editTimeSlotPage.css";
 
 const EditTimeSlotPage = () => {
   const { id } = useParams();
@@ -10,9 +11,9 @@ const EditTimeSlotPage = () => {
   const [message, setMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
-  const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString()); // 1 to 12
-  const minutes = ["00", "15", "30", "45"]; // Minute options
-  const periods = ["AM", "PM"]; // AM/PM options
+  const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+  const minutes = ["00", "15", "30", "45"];
+  const periods = ["AM", "PM"];
 
   useEffect(() => {
     const fetchSlotDetails = async () => {
@@ -56,10 +57,9 @@ const EditTimeSlotPage = () => {
       setMessage("Timeslot updated successfully!");
       setShowToast(true);
 
-      // Redirect to the homepage after a delay
       setTimeout(() => {
-        navigate("/home"); // Redirects to "/home" instead of login
-      }, 3000); // 3-second delay
+        navigate("/home");
+      }, 5000); // 5-second delay
     } catch (error) {
       console.error("Error updating timeslot:", error);
       setMessage(error.message);
@@ -104,14 +104,13 @@ const EditTimeSlotPage = () => {
   const endPeriod = slot.endTime.split(" ")[1];
 
   return (
-    <Container className="mt-5 position-relative">
-      <h2>Edit Timeslot</h2>
-      <Form onSubmit={handleSubmit}>
+    <Container className="form-container mt-5">
+      <h2 className="form-title">Edit Timeslot</h2>
+      <Form onSubmit={handleSubmit} className="spacious-form">
         <Form.Group controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
-            name="name"
             value={slot.name || ""}
             onChange={(e) => setSlot({ ...slot, name: e.target.value })}
             required
@@ -122,7 +121,6 @@ const EditTimeSlotPage = () => {
           <Form.Label>Project Name</Form.Label>
           <Form.Control
             type="text"
-            name="projectName"
             value={slot.projectName || ""}
             onChange={(e) => setSlot({ ...slot, projectName: e.target.value })}
             required
@@ -133,7 +131,6 @@ const EditTimeSlotPage = () => {
           <Form.Label>Description</Form.Label>
           <Form.Control
             as="textarea"
-            name="description"
             value={slot.description || ""}
             onChange={(e) => setSlot({ ...slot, description: e.target.value })}
             required
@@ -142,7 +139,7 @@ const EditTimeSlotPage = () => {
 
         <Form.Group controlId="startTime">
           <Form.Label>Start Time</Form.Label>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="time-select-group">
             <Form.Select
               value={startHour}
               onChange={(e) =>
@@ -184,7 +181,7 @@ const EditTimeSlotPage = () => {
 
         <Form.Group controlId="endTime">
           <Form.Label>End Time</Form.Label>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="time-select-group">
             <Form.Select
               value={endHour}
               onChange={(e) =>
@@ -228,7 +225,6 @@ const EditTimeSlotPage = () => {
           <Form.Label>Capstone Supervisor</Form.Label>
           <Form.Control
             type="text"
-            name="capstoneSupervisor"
             value={slot.capstoneSupervisor || ""}
             onChange={(e) =>
               setSlot({ ...slot, capstoneSupervisor: e.target.value })
@@ -237,48 +233,39 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="mt-3">
+        <Button variant="primary" type="submit" className="save-button mt-3">
           Save Changes
         </Button>
       </Form>
 
-      {/* Toast Notification */}
-      <div
-        style={{
-          position: "fixed",
-          top: "40%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 1050,
-        }}
+      <Toast
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        delay={5000}
+        autohide
+        className="custom-toast"
       >
-        <Toast
-          onClose={() => setShowToast(false)}
-          show={showToast}
-          delay={3000} // Matches redirect delay
-          autohide
-        >
-          <Toast.Header>
-            <strong className="me-auto">Update Success</strong>
-          </Toast.Header>
-          <Toast.Body>
-            <div>
-              <p>
-                <strong>Updated Name:</strong> {slot.name}
-              </p>
-              <p>
-                <strong>Updated Time:</strong> {slot.startTime} - {slot.endTime}
-              </p>
-              <p>
-                <strong>Updated Project Title:</strong> {slot.projectName}
-              </p>
-              <p>
-                <strong>Updated Description:</strong> {slot.description}
-              </p>
-            </div>
-          </Toast.Body>
-        </Toast>
-      </div>
+        <Toast.Header className="toast-header">
+          <strong className="me-auto text-success">SUCCESS</strong>
+        </Toast.Header>
+        <Toast.Body className="toast-body">
+          <p>
+            <strong>Name:</strong> {slot.name}
+          </p>
+          <p>
+            <strong>Time:</strong> {slot.startTime} - {slot.endTime}
+          </p>
+          <p>
+            <strong>Project Title:</strong> {slot.projectName}
+          </p>
+          <p>
+            <strong>Description:</strong> {slot.description}
+          </p>
+          <p>
+            <strong>Capstone Supervisor:</strong> {slot.capstoneSupervisor}
+          </p>
+        </Toast.Body>
+      </Toast>
     </Container>
   );
 };
