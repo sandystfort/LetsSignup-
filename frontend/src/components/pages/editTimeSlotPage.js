@@ -233,9 +233,14 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="save-button mt-4">
-          Save Changes
-        </Button>
+        <div className="d-flex justify-content-between mt-4">
+          <Button variant="secondary" onClick={() => navigate(-1)}>
+            Back
+          </Button>
+          <Button variant="primary" type="submit">
+            Save Changes
+          </Button>
+        </div>
       </Form>
 
       <Toast
@@ -262,7 +267,7 @@ const EditTimeSlotPage = () => {
             <strong>Description:</strong> {slot.description}
           </p>
           <p>
-            <strong>capstone Supervisor:</strong> {slot.capstoneSupervisor}
+            <strong>Capstone Supervisor:</strong> {slot.capstoneSupervisor}
           </p>
         </Toast.Body>
       </Toast>
