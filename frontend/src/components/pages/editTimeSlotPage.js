@@ -107,7 +107,7 @@ const EditTimeSlotPage = () => {
     <Container className="form-container mt-5">
       <h2 className="form-title">Edit Timeslot</h2>
       <Form onSubmit={handleSubmit} className="spacious-form">
-        <Form.Group controlId="name">
+        <Form.Group controlId="name" className="mb-4">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
@@ -117,7 +117,7 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="projectName">
+        <Form.Group controlId="projectName" className="mb-4">
           <Form.Label>Project Name</Form.Label>
           <Form.Control
             type="text"
@@ -127,7 +127,7 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="description">
+        <Form.Group controlId="description" className="mb-4">
           <Form.Label>Description</Form.Label>
           <Form.Control
             as="textarea"
@@ -137,7 +137,7 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="startTime">
+        <Form.Group controlId="startTime" className="mb-4">
           <Form.Label>Start Time</Form.Label>
           <div className="time-select-group">
             <Form.Select
@@ -179,7 +179,7 @@ const EditTimeSlotPage = () => {
           </div>
         </Form.Group>
 
-        <Form.Group controlId="endTime">
+        <Form.Group controlId="endTime" className="mb-4">
           <Form.Label>End Time</Form.Label>
           <div className="time-select-group">
             <Form.Select
@@ -221,7 +221,7 @@ const EditTimeSlotPage = () => {
           </div>
         </Form.Group>
 
-        <Form.Group controlId="capstoneSupervisor">
+        <Form.Group controlId="capstoneSupervisor" className="mb-4">
           <Form.Label>Capstone Supervisor</Form.Label>
           <Form.Control
             type="text"
@@ -233,7 +233,7 @@ const EditTimeSlotPage = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="save-button mt-3">
+        <Button variant="primary" type="submit" className="save-button mt-4">
           Save Changes
         </Button>
       </Form>
@@ -262,7 +262,7 @@ const EditTimeSlotPage = () => {
             <strong>Description:</strong> {slot.description}
           </p>
           <p>
-            <strong>Capstone Supervisor:</strong> {slot.capstoneSupervisor}
+            <strong>capstone Supervisor:</strong> {slot.capstoneSupervisor}
           </p>
         </Toast.Body>
       </Toast>
