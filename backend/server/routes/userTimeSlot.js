@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const timeslotModel = require("../models/timeslot");
+const timeslotModel = require("../models/timeSlot");
 
 // Convert time to 24-hour format for easier validation
 const convertTo24Hour = (hour, meridiem) => {
