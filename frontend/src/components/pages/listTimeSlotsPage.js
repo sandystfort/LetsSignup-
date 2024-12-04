@@ -5,7 +5,9 @@ const ListTimeSlotsPage = () => {
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
-      const response = await fetch("http://localhost:8081/meeting/slots");
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`
+      );
       const data = await response.json();
       setTimeSlots(data);
     };

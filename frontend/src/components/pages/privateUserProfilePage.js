@@ -41,11 +41,14 @@ const PrivateUserProfile = () => {
   // Submit updated user information
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:8081/user/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedUser),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_SERVER_URI}/user/update`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      }
+    );
 
     if (response.ok) {
       setUser(updatedUser); // Update the user info displayed
