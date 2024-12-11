@@ -7,8 +7,8 @@ import getUserInfo from "../../utilities/decodeJwt";
 const CreateTimeSlotPage = ({ onCreateSlot }) => {
   const [name, setName] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [startTime, setStartTime] = useState("7:00 AM");
-  const [endTime, setEndTime] = useState("5:00 PM");
+  const [startTime, setStartTime] = useState("9:00 AM");
+  const [endTime, setEndTime] = useState("4:40 PM");
   const [description, setDescription] = useState("");
   const [capstoneSupervisor, setCapstoneSupervisor] = useState(""); // New state
   const [day, setDay] = useState("Monday");
@@ -76,17 +76,30 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
   };
 
   const timeOptions = [
-    "7:00 AM",
-    "8:00 AM",
     "9:00 AM",
+    "9:20 AM",
+    "9:40 AM",
     "10:00 AM",
+    "10:20 AM",
+    "10:40 AM",
     "11:00 AM",
+    "11:20 AM",
+    "11:40 AM",
     "12:00 PM",
+    "12:20 PM",
+    "12:40 PM",
     "1:00 PM",
+    "1:20 PM",
+    "1:40 PM",
     "2:00 PM",
+    "2:20 PM",
+    "2:40 PM",
     "3:00 PM",
+    "3:20 PM",
+    "3:40 PM",
     "4:00 PM",
-    "5:00 PM",
+    "4:20 PM",
+    "4:40 PM",
   ];
 
   const monthOptions = [
