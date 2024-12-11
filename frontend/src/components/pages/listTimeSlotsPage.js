@@ -16,9 +16,12 @@ const ListTimeSlotsPage = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    const response = await fetch(`http://localhost:8081/meeting/slots/${id}`, {
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
     if (response.ok) {
       setTimeSlots(timeSlots.filter((slot) => slot._id !== id));
     }
