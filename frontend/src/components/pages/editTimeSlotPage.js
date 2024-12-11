@@ -19,7 +19,7 @@ const EditTimeSlotPage = () => {
     const fetchSlotDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8081/meeting/slots/${id}`
+          `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots/${id}`
         );
         if (!response.ok) throw new Error("Failed to load slot details");
 
@@ -42,7 +42,7 @@ const EditTimeSlotPage = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:8081/meeting/slots/${id}`,
+        `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

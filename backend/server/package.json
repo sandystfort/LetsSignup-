@@ -24,9 +24,11 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
+    "react-scripts": "^5.0.1",
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "nodemon": "^2.0.20"
   }
 }

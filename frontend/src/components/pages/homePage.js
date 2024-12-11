@@ -35,7 +35,8 @@ const HomePage = () => {
 
       console.log("Fetching slots from backend...");
       try {
-        const response = await fetch("http://localhost:8081/meeting/slots");
+        const response =
+          await fetch`${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`;
         if (!response.ok) throw new Error("Failed to fetch slots");
 
         const data = await response.json();
@@ -56,7 +57,9 @@ const HomePage = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this slot?")) {
-      fetch(`http://localhost:8081/meeting/slots/${id}`, { method: "DELETE" })
+      fetch(`${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots/${id}`, {
+        method: "DELETE",
+      })
         .then((response) => {
           if (response.ok) {
             const updatedSlots = slots.filter((slot) => slot._id !== id);

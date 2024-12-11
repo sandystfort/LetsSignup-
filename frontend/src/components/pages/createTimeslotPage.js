@@ -41,11 +41,14 @@ const CreateTimeSlotPage = ({ onCreateSlot }) => {
     console.log("Submitting time slot:", slotData); // Check the payload
 
     try {
-      const response = await fetch("http://localhost:8081/meeting/slots", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(slotData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(slotData),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
