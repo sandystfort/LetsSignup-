@@ -35,8 +35,12 @@ const HomePage = () => {
 
       console.log("Fetching slots from backend...");
       try {
-        const response =
-          await fetch`${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`;
+        console.log(
+          `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`
+        );
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_SERVER_URI}/meeting/slots`
+        );
         if (!response.ok) throw new Error("Failed to fetch slots");
 
         const data = await response.json();
